@@ -1,6 +1,6 @@
 #include "Entity.hpp"
 
-Entity::Entity(int hp, int spd, Vector2 pos, const char *sheetLocation)
+Entity::Entity(int hp, float spd, Vector2 pos, const char *sheetLocation)
 {
     health = hp;
     speed = spd;
@@ -19,7 +19,7 @@ int Entity::gethealth()
     return health;
 }
 
-int Entity::getspeed()
+float Entity::getspeed()
 {
     return speed;
 }
