@@ -1,7 +1,8 @@
 #include "raylib.h"
-#include "button.hpp"
-#include "Entity.hpp"
-#include "Player.hpp"
+#include "gui/button.hpp"
+#include "gui/slider.hpp"
+#include "actors/Entity.hpp"
+#include "actors/Player.hpp"
 
 int main()
 {
@@ -16,7 +17,8 @@ const int screenHeight = 1080;
 InitWindow(screenWidth, screenHeight, "Dungeon");
 
 Player player(0, 0, 0, {screenWidth/2, screenHeight/2}, "resources/Default.png");
-button testButton({screenWidth/2, screenHeight/2}, "resources/button/button.png");
+button testButton({screenWidth/2, screenHeight/2}, "resources/gui/button.png");
+slider testSlider({screenWidth/2, (screenHeight/2) + 200.0f}, "resources/gui/slider.png", "resources/gui/knob.png", 50);
 
 SetTargetFPS(60);
 
@@ -27,11 +29,19 @@ while(!WindowShouldClose())
     
     player.draw(0,0);
     testButton.draw("Hi!");
+    testSlider.draw("Volume: ", testSlider.getValue());
+    DrawText(TextFormat("SCORE: %i", testSlider.getValue()), 280, 130, 40, MAROON);
+
     //DrawText("Hi.", screenWidth/2, screenHeight/2, 10, RED);
 
     if(testButton.isPressed(GetMousePosition(), IsMouseButtonPressed(MOUSE_BUTTON_LEFT)))
     {
         ClearBackground(DARKGRAY);
+    }
+
+    if(testSlider.isPressed(GetMousePosition(), IsMouseButtonDown(MOUSE_BUTTON_LEFT)))
+    {
+        
     }
 
     EndDrawing();
