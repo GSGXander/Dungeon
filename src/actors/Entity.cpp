@@ -1,17 +1,21 @@
 #include "Entity.hpp"
 
-Entity::Entity(int hp, float spd, Vector2 pos, const char *sheetLocation)
+Entity::Entity(int hp, float spd, Vector2 pos, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY)
+    : animatedSprite(spriteCellCountX, spriteCellCountY, sheetLocation)
 {
     health = hp;
     speed = spd;
     position = pos;
-    spriteSheet = LoadTexture(sheetLocation);
+    //spriteSheet = LoadTexture(sheetLocation);
     hitbox = {position.x - 75.0f, position.y - 150.0f, 150.0f, 150.0f};
 }
 
-void Entity::draw(int frame, int action)
+void Entity::draw(int action)
 {
-    DrawTextureRec(spriteSheet, (Rectangle) {0.0f + (frame * 150), 0.0f + (frame * 150), 150.0f, 150.0f}, {position.x - 75.0f, position.y - 150.0f}, WHITE);
+    animatedSprite.playAnimation(action);
+    DrawTextureRec(animatedSprite.getSpriteSheet(), (Rectangle) {animatedSprite.getSpriteX(), animatedSprite.getSpriteY(), 
+    animatedSprite.getCellWidth(), animatedSprite.getCellHeight()}, 
+    {position.x-animatedSprite.getCellWidth()/2, position.y-animatedSprite.getCellHeight()}, WHITE);
 }
 
 int Entity::gethealth()

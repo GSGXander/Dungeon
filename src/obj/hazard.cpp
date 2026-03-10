@@ -1,12 +1,12 @@
 #include "hazard.hpp"
 
-hazard::hazard(Vector2 pos, const char *sprite, bool plyAttack, bool persistent)
+hazard::hazard(Vector2 pos, const char *sprite, bool plyAttack, bool persistent, int spriteCellCountX, int spriteCellCountY)
+    : animatedSprite(spriteCellCountX, spriteCellCountY, sprite)
 {
     position = pos;
-    spriteSheet = LoadTexture(sprite);
 
-    hitbox = {position.x - spriteSheet.width/2, position.y - spriteSheet.height/2,  
-        static_cast<float>(spriteSheet.width), static_cast<float>(spriteSheet.height)};
+    hitbox = {position.x - animatedSprite.getCellWidth()/2, position.y - animatedSprite.getCellHeight()/2,  
+        static_cast<float>(animatedSprite.getCellWidth()), static_cast<float>(animatedSprite.getCellHeight())};
     
     playerAttack = plyAttack;
     isPersistent = persistent;
@@ -26,7 +26,10 @@ bool hazard::checkCollision(Rectangle entityHitbox)
     return false;
 }
 
-void hazard::draw(int frame)
+void hazard::draw()
 {
-    DrawTextureRec(spriteSheet, (Rectangle) {0.0f + (frame * 150), 0.0f + (frame * 150), 150.0f, 150.0f}, {position.x - 75.0f, position.y - 150.0f}, WHITE);
+    animatedSprite.playAnimation(0);
+    DrawTextureRec(animatedSprite.getSpriteSheet(), (Rectangle) {animatedSprite.getSpriteX(), animatedSprite.getSpriteY(), 
+    animatedSprite.getCellWidth(), animatedSprite.getCellHeight()}, 
+    {position.x-animatedSprite.getCellWidth()/2, position.y-animatedSprite.getCellHeight()}, WHITE);
 }

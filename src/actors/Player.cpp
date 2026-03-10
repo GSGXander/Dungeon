@@ -1,7 +1,7 @@
 #include "Player.hpp"
 
-Player::Player(int dCounter, float sUpgrade, int hUpgrade, Vector2 position, const char *sheetLocation)
-    : Entity(3 + hUpgrade, 3.0f + sUpgrade, position, sheetLocation)
+Player::Player(int dCounter, float sUpgrade, int hUpgrade, Vector2 position, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY)
+    : Entity(3 + hUpgrade, 3.0f + sUpgrade, position, sheetLocation, spriteCellCountX, spriteCellCountY)
 {
     deathCounter = dCounter;
     spdUpgrade = sUpgrade;

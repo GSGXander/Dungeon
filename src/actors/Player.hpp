@@ -14,7 +14,7 @@ class Player : public Entity
         bool canJump;
 
     public:
-        Player(int dCounter, float sUpgrade, int hUpgrade, Vector2 position, const char *sheetLocation);
+        Player(int dCounter, float sUpgrade, int hUpgrade, Vector2 position, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY);
             
         int getDeaths();
         void setDeaths(int newDeath);
