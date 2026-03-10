@@ -29,8 +29,7 @@ while(!WindowShouldClose())
     
     player.draw(0);
     testButton.draw("Hi!");
-    testSlider.draw("Volume: ", testSlider.getValue());
-    DrawText(TextFormat("SCORE: %i", testSlider.getValue()), 280, 130, 40, MAROON);
+    testSlider.draw("Volume", testSlider.getValue());
 
     //DrawText("Hi.", screenWidth/2, screenHeight/2, 10, RED);
 

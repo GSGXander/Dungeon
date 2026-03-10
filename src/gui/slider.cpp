@@ -9,7 +9,7 @@ slider::slider(Vector2 position,  const char *trTexture, const char *knTexture, 
     
     float leftBound = trackPos.x - trackTexture.width/2;
     float rightBound = trackPos.x + trackTexture.width/2;
-    knobPos = ((((float)val*(rightBound - leftBound))/100.0f)+leftBound);
+    knobPos = ((((float)val*(rightBound - leftBound))/100.0f)+leftBound) - 20.0f;
 }
 
 int slider::getValue()
@@ -52,5 +52,7 @@ void slider::draw(const char *text, int val)
 {
     DrawTextureV(trackTexture, {trackPos.x - trackTexture.width/2, trackPos.y - trackTexture.height/2}, WHITE);
     DrawTextureV(knobTexture, {knobPos, trackPos.y - trackTexture.height/2}, WHITE);
-    DrawText(TextFormat(text, "%i", val), trackPos.x - 5.0f, trackPos.y + 50.0f, 30, BLACK);
+    DrawText(TextFormat("%s: %i", text, val), trackPos.x - (float)MeasureText(TextFormat("%s: %i", text, val), 30)/2, trackPos.y + 50.0f, 30, BLACK);
+
+    
 }
