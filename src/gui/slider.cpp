@@ -7,9 +7,9 @@ slider::slider(Vector2 position,  const char *trTexture, const char *knTexture, 
     knobTexture = LoadTexture(knTexture);
     value = val;
     
-    float leftBound = trackPos.x - trackTexture.width;
+    float leftBound = trackPos.x - trackTexture.width/2;
     float rightBound = trackPos.x + trackTexture.width/2;
-    knobPos = ((((float)val*(rightBound - leftBound))/100.0f)+leftBound);
+    knobPos = ((((float)val*(rightBound - leftBound))/100.0f)+leftBound) + 5.0f;
 }
 
 int slider::getValue()
@@ -29,11 +29,11 @@ bool slider::isPressed(Vector2 cursorLocation, bool isMousePressed)
     
     if(CheckCollisionPointRec(cursorLocation, trackBounds) && isMousePressed)
     {
-        float leftBound = trackPos.x - trackTexture.width;
+        float leftBound = trackPos.x - trackTexture.width/2;
         float rightBound = trackPos.x + trackTexture.width/2;
-
+        
         knobPos = cursorLocation.x - knobTexture.width/2;
-        value = (int)((100.0f / (rightBound - leftBound)) * (knobPos - leftBound));
+        value = (int)((100.0f / (rightBound - leftBound)) * (knobPos - leftBound)) + 5.0f;
         return true;
     }
     return false;
