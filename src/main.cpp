@@ -17,7 +17,7 @@ const int screenHeight = 1080;
 InitWindow(screenWidth, screenHeight, "Dungeon");
 
 Player player(0, 0, 0, {screenWidth/2, screenHeight/2}, "resources/movementTest-Sheet.png", 2, 1);
-button testButton({screenWidth/2, screenHeight/2}, "resources/gui/button.png");
+button testButton({screenWidth/2, screenHeight/2}, "resources/gui/button_Resize.png");
 slider testSlider({screenWidth/2, (screenHeight/2) + 200.0f}, "resources/gui/slider.png", "resources/gui/knob.png", 50);
 
 SetTargetFPS(60);

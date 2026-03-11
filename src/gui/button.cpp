@@ -36,6 +36,8 @@ void button::draw(const char *text)
     }
     */
     
+    Vector2 textSize = MeasureTextEx(GetFontDefault(), text, 20, 1);
+
     DrawTextureV(buttonTexture, {position.x - buttonTexture.width/2 , position.y - buttonTexture.height/2}, WHITE);
-    DrawText(text, position.x - 5.0f, position.y - 5.0f, 10, BLACK);
+    DrawText(text, position.x - textSize.x/2, position.y - textSize.y/2, 20, BLACK);
 }
