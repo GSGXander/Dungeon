@@ -1,11 +1,12 @@
 #include "slider.hpp"
 
-slider::slider(Vector2 position,  const char *trTexture, const char *knTexture, int val)
+slider::slider(Vector2 position,  const char *trTexture, const char *knTexture, std::string buttonText, int val)
 {
     trackPos = position;
     trackTexture = LoadTexture(trTexture);
     knobTexture = LoadTexture(knTexture);
     value = val;
+    text = buttonText;
     
     float leftBound = trackPos.x - trackTexture.width/2;
     float rightBound = trackPos.x + trackTexture.width/2;
@@ -48,11 +49,13 @@ bool slider::isPressed(Vector2 cursorLocation, bool isMousePressed)
     return false;
 }
 
-void slider::draw(const char *text, int val)
+void slider::draw()
 {
+    const char *buttonText = text.c_str();
+    
     DrawTextureV(trackTexture, {trackPos.x - trackTexture.width/2, trackPos.y - trackTexture.height/2}, WHITE);
     DrawTextureV(knobTexture, {knobPos, trackPos.y - trackTexture.height/2}, WHITE);
-    DrawText(TextFormat("%s: %i", text, val), trackPos.x - (float)MeasureText(TextFormat("%s: %i", text, val), 30)/2, trackPos.y + 50.0f, 30, BLACK);
+    DrawText(TextFormat("%s: %i", buttonText, value), trackPos.x - (float)MeasureText(TextFormat("%s: %i", buttonText, value), 30)/2, trackPos.y + 50.0f, 30, BLACK);
 
     
 }
