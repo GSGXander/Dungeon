@@ -8,12 +8,12 @@ button::button(Vector2 screenPosition, std::string buttonText, const char *textu
     value = 0;
 }
 
-button::button(Vector2 screenPosition, std::string buttonText, const char *textureLoc, int val)
+button::button(Vector2 screenPosition, const char *textureLoc)
 {
     position = screenPosition;
     buttonTexture = LoadTexture(textureLoc);
-    text = buttonText;
-    value = val;
+    text = "";
+    value = 0;
 }
 
 bool button::isPressed(Vector2 cursorLocation, bool isMousePressed)

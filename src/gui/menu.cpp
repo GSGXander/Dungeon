@@ -1,38 +1,41 @@
 #include "menu.hpp"
 
-menu::menu(std::vector<button> buttonList, std::vector<slider> sliderList, std::vector<Texture2D> decalList)
-    :buttons(buttonList), sliders(sliderList), decals(decalList)
+menu::menu(std::vector<button> buttonList, std::vector<slider> sliderList)
+    :buttons(buttonList), sliders(sliderList)
 {}
 
-menu::menu(std::vector<button> buttonList, std::vector<Texture2D> decalList)
-    :buttons(buttonList), decals(decalList)
+menu::menu(std::vector<button> buttonList)
+    :buttons(buttonList)
 {}
 
 
-bool menu::isPressed(Vector2 cursorLocation, bool isMousePressed)
+int menu::isPressed(Vector2 cursorLocation, bool isMousePressed)
 {
-    for(int i = 0; i < sliders.size(); i++)
+    int buttonId = -1;
+    for(auto& Slider : sliders)
     {
-        sliders[i].isPressed(cursorLocation, isMousePressed);
+        buttonId++;
+        Slider.isPressed(cursorLocation, isMousePressed);
     }
-    for(int i = 0; i < buttons.size(); i++)
+    for(auto& Button : buttons)
     {
-        buttons[i].isPressed(cursorLocation, isMousePressed);
+        buttonId++;
+        if(Button.isPressed(cursorLocation, isMousePressed))
+        {
+            return buttonId;
+        }
     }
+    return -5;
 }
 
 void menu::draw()
 {
-    for(int i = 0; i < sliders.size(); i++)
+    for(auto& Slider : sliders)
     {
-        sliders[i].draw();
+        Slider.draw();
     }
-    for(int i = 0; i < buttons.size(); i++)
+    for(auto& Button : buttons)
     {
-        buttons[i].draw();
-    }
-    for(int i = 0; i < decals.size(); i++)
-    {
-        
+        Button.draw();
     }
 }

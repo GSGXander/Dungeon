@@ -12,7 +12,7 @@ class button
     
     public:
         button(Vector2 screenPosition, std::string buttonText, const char *textureLoc);
-        button(Vector2 screenPosition, std::string buttonText, const char *textureLoc, int val);
+        button(Vector2 screenPosition, const char *textureLoc);
 
         bool isPressed(Vector2 cursorLocation, bool isMousePressed);
 
