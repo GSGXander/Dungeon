@@ -8,11 +8,17 @@ class button
         Vector2 position;
         Texture2D buttonTexture;
         std::string text;
+        int value;
     
     public:
         button(Vector2 screenPosition, std::string buttonText, const char *textureLoc);
+        button(Vector2 screenPosition, std::string buttonText, const char *textureLoc, int val);
 
         bool isPressed(Vector2 cursorLocation, bool isMousePressed);
+
+        int isPressedVal(Vector2 cursorLocation, bool isMousePressed);
+
+        int getValue();
 
         void draw();
 };

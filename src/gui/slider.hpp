@@ -1,5 +1,6 @@
 #pragma once
 #include <raylib.h>
+#include <string>
 
 class slider
 {
@@ -8,14 +9,15 @@ class slider
         float knobPos;
         Texture2D trackTexture;
         Texture2D knobTexture;
+        std::string text;
         int value;
     
     public:
-        slider(Vector2 position,  const char *trTexture, const char *knTexture, int val);
+        slider(Vector2 position,  const char *trTexture, const char *knTexture, std::string buttonText,int val);
 
         bool isPressed(Vector2 cursorLocation, bool isMousePressed);
 
-        void draw(const char *text, int val);
+        void draw();
 
         int getValue();
         void setValue(int val);
