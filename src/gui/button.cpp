@@ -1,9 +1,10 @@
 #include "button.hpp"
 
-button::button(Vector2 screenPosition, const char *textureLoc)
+button::button(Vector2 screenPosition, std::string buttonText, const char *textureLoc)
 {
     position = screenPosition;
     buttonTexture = LoadTexture(textureLoc);
+    text = buttonText;
 }
 
 bool button::isPressed(Vector2 cursorLocation, bool isMousePressed)
@@ -21,7 +22,7 @@ bool button::isPressed(Vector2 cursorLocation, bool isMousePressed)
     return false;
 }
 
-void button::draw(const char *text)
+void button::draw()
 {
     /*
     if(!isPressed)
@@ -36,8 +37,10 @@ void button::draw(const char *text)
     }
     */
     
-    Vector2 textSize = MeasureTextEx(GetFontDefault(), text, 20, 1);
+    const char *buttonText = text.c_str();
+
+    Vector2 textSize = MeasureTextEx(GetFontDefault(), buttonText, 20, 1);
 
     DrawTextureV(buttonTexture, {position.x - buttonTexture.width/2 , position.y - buttonTexture.height/2}, WHITE);
-    DrawText(text, position.x - textSize.x/2, position.y - textSize.y/2, 20, BLACK);
+    DrawText(buttonText, position.x - textSize.x/2, position.y - textSize.y/2, 20, BLACK);
 }

@@ -12,35 +12,35 @@ const int screenWidth = 1920;
 const int screenHeight = 1080;
 ////////////
 
-////////////
-
 InitWindow(screenWidth, screenHeight, "Dungeon");
 
-Player player(0, 0, 0, {screenWidth/2, screenHeight/2}, "resources/movementTest-Sheet.png", 2, 1);
-button testButton({screenWidth/2, screenHeight/2}, "resources/gui/button_Resize.png");
-slider testSlider({screenWidth/2, (screenHeight/2) + 200.0f}, "resources/gui/slider.png", "resources/gui/knob.png", 50);
+/////Menus/////
+button *currentMenu;
+
+button mainMenu[4] = {{{screenWidth/2 - 250.0f,screenHeight/2 + 150.0f}, "Start", "resources/gui/button_Resize.png"},
+{{screenWidth/2,screenHeight/2 + 150.0f}, "Options", "resources/gui/button_Resize.png"},
+{{screenWidth/2 + 250.0f,screenHeight/2 + 150.0f}, "Quit", "resources/gui/button_Resize.png"},
+{{screenWidth - 200.0f, screenHeight - 100.0f}, "Achievements", "resources/gui/button_Resize.png"}};
+
+////////////
+
+//Player player(0, 0, 0, {screenWidth/2, screenHeight/2}, "resources/movementTest-Sheet.png", 2, 1);
+//button testButton({screenWidth/2, screenHeight/2}, "resources/gui/button_Resize.png");
+//slider testSlider({screenWidth/2, (screenHeight/2) + 200.0f}, "resources/gui/slider.png", "resources/gui/knob.png", 50);
+
+////////////
 
 SetTargetFPS(60);
+currentMenu = mainMenu;
 
 while(!WindowShouldClose())
 {
     BeginDrawing();
     ClearBackground(GRAY);
-    
-    player.draw(0);
-    testButton.draw("Hi!");
-    testSlider.draw("Volume", testSlider.getValue());
 
-    //DrawText("Hi.", screenWidth/2, screenHeight/2, 10, RED);
-
-    if(testButton.isPressed(GetMousePosition(), IsMouseButtonPressed(MOUSE_BUTTON_LEFT)))
+    for(int i = 0; i < 4; i++)
     {
-        ClearBackground(DARKGRAY);
-    }
-
-    if(testSlider.isPressed(GetMousePosition(), IsMouseButtonDown(MOUSE_BUTTON_LEFT)))
-    {
-        
+        (currentMenu + i)->draw();
     }
 
     EndDrawing();
