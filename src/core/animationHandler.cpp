@@ -9,6 +9,7 @@ animationHandler::animationHandler(int cellCountX, int cellCountY, const char *s
     cellSizeX = spriteSheet.width/(float)cellCountX;
     cellSizeY = spriteSheet.height/(float)cellCountY;
     frameSpeed = 8;
+    flipped = false;
 }
 
 void animationHandler::playAnimation(int action)
@@ -33,7 +34,31 @@ void animationHandler::playAnimation(int action)
     }
 }
 
-void animationHandler::playAnimation(int action, int speed)
+void animationHandler::playAnimation(int action, int frameCount)
+{
+    if(((float)action * cellSizeY) == spriteY)
+    {
+        frameCounter++;
+        if(frameCounter >= (60/frameSpeed))
+        {
+            frameCounter = 0;
+            spriteX += cellSizeX;
+            if(spriteX >= (float)(cellSizeX*frameCount))
+            {
+                spriteX = 0.0f;
+            }
+        }
+    }
+    else
+    {
+        spriteX = 0.0f;
+        spriteY = (float)action * cellSizeY;
+    }
+}
+
+
+
+/*void animationHandler::playAnimation(int action, int speed)
 {
     if(((float)action * cellSizeY) == spriteY)
     {
@@ -53,6 +78,11 @@ void animationHandler::playAnimation(int action, int speed)
         spriteX = 0.0f;
         spriteY = (float)action * cellSizeY;
     }
+}*/
+
+void animationHandler::flipSprite(bool flip)
+{
+    
 }
 
 float animationHandler::getCellWidth()

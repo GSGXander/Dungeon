@@ -9,8 +9,8 @@ int main()
 {
 
 ////////////
-const int screenWidth = 1920;
-const int screenHeight = 1080;
+const int screenWidth = 1280;
+const int screenHeight = 720;
 int gameMode = 0; // 0 = menu, 1 = game, 2 = transition
 int currentMenu = 0;
 bool endGame = false;
@@ -43,6 +43,13 @@ menu menuManager[3] = {{mainButtons}, {{optionsButtons},{optionsSliders}}, {opti
 ////Textures///
 Texture2D logo = LoadTexture("resources/Default.png");
 
+////Rooms////
+
+Rectangle floor = {screenWidth/2 - (screenWidth - 200.0f)/2, screenHeight/2 + 100.0f, screenWidth - 200.0f, 50.0f};
+
+////////////
+
+Player player(0, 0, 0, {screenWidth/2, screenHeight/2}, "resources/playerMovementTest-Sheet.png", 2, 2);
 
 ////////////
 
@@ -52,9 +59,16 @@ SetTargetFPS(60);
 while(!WindowShouldClose() && !endGame)
 {
     BeginDrawing();
-    ClearBackground(GRAY);
-
-    if (gameMode == 0)
+    if(gameMode != 1)
+    {
+        ClearBackground(GRAY);
+    }
+    else
+    {
+        ClearBackground(BLACK);
+    }
+    
+    if (gameMode == 0) // Menu Mode
     {
         switch (currentMenu)
         {
@@ -131,12 +145,17 @@ while(!WindowShouldClose() && !endGame)
             break;
         }
     }
-    else if (gameMode == 1)
+    else if (gameMode == 1) // Gameplay Mode
     {
-        ClearBackground(BLACK);
-        DrawText("Insert game here", screenWidth/2 - MeasureText("Insert game here", 50)/2, screenHeight/2, 50, RED);
+        DrawText(TextFormat("X Cord: %f", player.getPositionX()), 0,0,50,WHITE);
+        DrawRectangleRec(floor, BLUE);
+        if(player.playerCollisionCheck(floor))
+        {
+            player.setPositionY(floor.y);
+        }
+        player.playerMove();
     }
-    else
+    else // Transitional Mode
     {
         menuManager[currentMenu].draw();
         DrawTexture(logo, screenWidth/2 - logo.width/2, screenHeight/2 - logo.height/2 - 200.0f, WHITE);
