@@ -6,7 +6,8 @@ Entity::Entity(int hp, float spd, Vector2 pos, const char *sheetLocation, int sp
     health = hp;
     speed = spd;
     position = pos;
-    verticalSpeed = 0;
+    verticalSpeed = 0.0f;
+    horizontalSpeed = 0.0f;
     //spriteSheet = LoadTexture(sheetLocation);
     hitbox = {position.x-animatedSprite.getCellWidth()/2, position.y-animatedSprite.getCellHeight(), 
         animatedSprite.getCellWidth(), animatedSprite.getCellHeight()};
@@ -73,4 +74,24 @@ void Entity::setPositionX(int newX)
 void Entity::setPositionY(int newY)
 {
     position.y = newY;
+}
+
+float Entity::getVerticalSpeed()
+{
+    return verticalSpeed;
+}
+
+void Entity::setVerticalSpeed(float new_speed)
+{
+    verticalSpeed = new_speed;
+}
+
+float Entity::getHorizontalSpeed()
+{
+    return horizontalSpeed;
+}
+
+void Entity::setHorizontalSpeed(float new_speed)
+{
+    horizontalSpeed = new_speed;
 }

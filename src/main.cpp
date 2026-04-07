@@ -11,10 +11,11 @@ int main()
 ////////////
 const int screenWidth = 1280;
 const int screenHeight = 720;
-int gameMode = 0; // 0 = menu, 1 = game, 2 = transition
+int gameMode = 1; // 0 = menu, 1 = game, 2 = transition
 int currentMenu = 0;
 bool endGame = false;
 float transitionScreen = 0.0f;
+float deltaTime;
 
 ////Methods/////
 
@@ -45,7 +46,11 @@ Texture2D logo = LoadTexture("resources/Default.png");
 
 ////Rooms////
 
-Rectangle floor = {screenWidth/2 - (screenWidth - 200.0f)/2, screenHeight/2 + 100.0f, screenWidth - 200.0f, 50.0f};
+Rectangle tutorial_room[4] = {
+    {0, 670.0f, 1280.0f, 50.0f}, 
+    {0, 0, 1280.0f, 50.0f}, 
+    {0, 50.0f, 50.0f, 620.0f},
+    {1230.0f, 50.0f, 50.0f, 620.0f}};
 
 ////////////
 
@@ -59,6 +64,8 @@ SetTargetFPS(60);
 while(!WindowShouldClose() && !endGame)
 {
     BeginDrawing();
+    deltaTime = GetFrameTime();
+
     if(gameMode != 1)
     {
         ClearBackground(GRAY);
@@ -147,13 +154,39 @@ while(!WindowShouldClose() && !endGame)
     }
     else if (gameMode == 1) // Gameplay Mode
     {
-        DrawText(TextFormat("X Cord: %f", player.getPositionX()), 0,0,50,WHITE);
-        DrawRectangleRec(floor, BLUE);
-        if(player.playerCollisionCheck(floor))
+        player.setVerticalSpeed(player.getVerticalSpeed() - (25.0f * deltaTime)); //Gravity 
+        DrawText(TextFormat("VSPEED: %f", player.getVerticalSpeed()), 0,150,50,WHITE);
+        player.movementKeyCheck(deltaTime);
+        
+        if(player.getHorizontalSpeed() != 0.0f)
         {
-            player.setPositionY(floor.y);
+            player.setPositionX(player.getPositionX() + player.getHorizontalSpeed());
         }
-        player.playerMove();
+        if(player.getVerticalSpeed() != 0.0f)
+        {
+            player.setPositionY(player.getPositionY() - player.getVerticalSpeed());
+        }
+        player.updateHithox();
+
+        for(int i = 0; i < 4; i++)
+        {
+            DrawRectangleRec(tutorial_room[i], BLUE);
+            player.playerCollisionCheck(tutorial_room[i]);
+        }
+
+        if(player.getHorizontalSpeed() != 0.0f)
+        {
+            player.draw(1);
+        }
+        else
+        {
+            player.draw(0,1);
+        }
+        
+        DrawText(TextFormat("X Cord: %f", player.getPositionX()), 0,0,50,WHITE);
+        DrawText(TextFormat("Y Cord: %f", player.getPositionY()), 0,50,50,WHITE);
+        DrawText(TextFormat("Can Jump: %d", player.ableToJump()), 0,100,50,WHITE);
+
     }
     else // Transitional Mode
     {

@@ -3,7 +3,7 @@
 animationHandler::animationHandler(int cellCountX, int cellCountY, const char *sheetLocation)
 {
     spriteSheet = LoadTexture(sheetLocation);
-    
+
     cellXMax = cellCountX;
 
     cellSizeX = spriteSheet.width/(float)cellCountX;

@@ -7,6 +7,7 @@ class Entity
     protected:
         int health;
         float speed;
+        float horizontalSpeed;
         float verticalSpeed;
         Vector2 position;
         Rectangle hitbox;
@@ -23,6 +24,10 @@ class Entity
         void sethealth(int new_health);
         float getspeed();
         void setspeed(int new_speed);
+        float getVerticalSpeed();
+        void setVerticalSpeed(float new_speed);
+        float getHorizontalSpeed();
+        void setHorizontalSpeed(float new_speed);
 
         void updateHithox();
 
