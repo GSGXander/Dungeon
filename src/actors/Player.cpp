@@ -31,41 +31,42 @@ void Player::movementKeyCheck(float delta)
 
         if(IsKeyPressed(KEY_SPACE) && canJump)
         {
-            verticalSpeed = 500.0f * delta;
+            verticalSpeed = 750.0f * delta;
         }
     }
 }
 
-void Player::playerCollisionCheck(Rectangle Rec)
+void Player::playerCollisionCheck(Rectangle *Rec, int roomSize)
 {
     bool onGround = false;
     
-    if((CheckCollisionPointRec({position.x, position.y - verticalSpeed}, Rec))) //floor collision
+    for(int i = 0; i < roomSize; i++)
     {
-        verticalSpeed = 0;
-        position.y = Rec.y;
-        onGround = true;
-    }
-    else if(CheckCollisionPointRec({position.x, position.y - hitbox.height}, Rec) && verticalSpeed > 0.0f) //ceiling collision
-    {
-        verticalSpeed = 0;
-    }
-    
-    canJump = onGround;
+        Rectangle *Rect = Rec + i;
+        if((CheckCollisionPointRec({position.x, position.y - verticalSpeed}, *Rect))) //floor collision
+        {
+            verticalSpeed = 0;
+            position.y = Rect->y;
+            onGround = true;
+        }
+        else if(CheckCollisionPointRec({position.x, position.y - hitbox.height}, *Rect) && verticalSpeed > 0.0f) //ceiling collision
+        {
+            verticalSpeed = 0;
+        }
 
-    if(CheckCollisionPointRec({position.x - hitbox.width/2, position.y - hitbox.height/2}, Rec)) //Left wall collision
-    {
-        horizontalSpeed = 0;
-        position.x = Rec.x + Rec.width + hitbox.width/2;
-    }
+        if(CheckCollisionPointRec({position.x - hitbox.width/2, position.y - hitbox.height/2}, *Rect)) //Left wall collision
+        {
+            horizontalSpeed = 0;
+            position.x = Rect->x + Rect->width + hitbox.width/2;
+        }
     
-    else if(CheckCollisionPointRec({position.x + hitbox.width/2, position.y - hitbox.height/2}, Rec)) //Right wall collision
-    {
-        horizontalSpeed = 0;
-        position.x = Rec.x - hitbox.width/2;
+        else if(CheckCollisionPointRec({position.x + hitbox.width/2, position.y - hitbox.height/2}, *Rect)) //Right wall collision
+        {
+            horizontalSpeed = 0;
+            position.x = Rect->x - hitbox.width/2;
+        }
     }
-    
-    DrawText(TextFormat("onGround: %d", onGround), 0,200,50,WHITE);
+    canJump = onGround;
 }
 
 int Player::getDeaths()

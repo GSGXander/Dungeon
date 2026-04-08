@@ -82,7 +82,7 @@ void animationHandler::playAnimation(int action, int frameCount)
 
 void animationHandler::flipSprite(bool flip)
 {
-    
+    flipped = flip;
 }
 
 float animationHandler::getCellWidth()
