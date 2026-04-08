@@ -24,7 +24,7 @@ void transition(float opacity);
 
 ////////////
 InitWindow(screenWidth, screenHeight, "Dungeon");
-
+InitAudioDevice();
 /////Menus/////
 std::vector<button> mainButtons = {
 {{screenWidth/2 - 250.0f,screenHeight/2 + 150.0f}, "Start", "resources/gui/button_Resize.png"},
@@ -61,6 +61,9 @@ int currentRoomSize = 5;
 ////////////
 
 Player player(0, 0, 0, {150, screenHeight - 50.0f}, "resources/playerMovementTest-Sheet.png", 2, 2);
+Music music = LoadMusicStream("resources/music/hazy_maze_cave.mp3");
+music.looping = true;
+SetMusicVolume(music, (float)(optionsSliders[1].getValue())/100.0f);
 
 ////////////
 
@@ -160,6 +163,12 @@ while(!WindowShouldClose() && !endGame)
     }
     else if (gameMode == 1) // Gameplay Mode
     {
+        UpdateMusicStream(music);
+        if(!IsMusicStreamPlaying(music))
+        {
+            PlayMusicStream(music);
+        }
+
         player.setVerticalSpeed(player.getVerticalSpeed() - (25.0f * deltaTime)); //Gravity 
         player.movementKeyCheck(deltaTime);
         
@@ -208,6 +217,7 @@ while(!WindowShouldClose() && !endGame)
             DrawText(TextFormat("Can Jump: %d", player.ableToJump()), 0,100,50,WHITE);
             DrawText(TextFormat("VSPEED: %f", player.getVerticalSpeed()), 0,150,50,WHITE);
             DrawText(TextFormat("HSPEED: %f", player.getHorizontalSpeed()), 0,200,50,WHITE);
+            DrawText(TextFormat("Direction: %f", player.getDirection()), 0,250,50,WHITE);
         }
 
     }

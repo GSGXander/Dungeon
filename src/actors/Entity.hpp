@@ -9,6 +9,7 @@ class Entity
         float speed;
         float horizontalSpeed;
         float verticalSpeed;
+        float direction;
         Vector2 position;
         Rectangle hitbox;
         animationHandler animatedSprite;
@@ -28,6 +29,7 @@ class Entity
         void setVerticalSpeed(float new_speed);
         float getHorizontalSpeed();
         void setHorizontalSpeed(float new_speed);
+        float getDirection();
 
         void updateHithox();
 

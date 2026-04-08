@@ -19,10 +19,18 @@ void Player::movementKeyCheck(float delta)
         if(IsKeyDown(KEY_A))
         {
             horizontalSpeed = -speed * delta;
+            if(direction < 0.0f)
+            {
+                direction = 1.0f;
+            }
         }   
         else if(IsKeyDown(KEY_D))
         {
             horizontalSpeed = speed * delta;
+            if(direction > 0.0f)
+            {
+                direction = -1.0f;
+            }
         }
         else
         {
