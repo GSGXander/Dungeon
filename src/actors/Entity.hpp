@@ -31,6 +31,7 @@ class Entity
         void setHorizontalSpeed(float new_speed);
         float getDirection();
 
+        Rectangle getHitbox();
         void updateHithox();
 
         float getPositionX();

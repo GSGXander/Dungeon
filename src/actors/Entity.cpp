@@ -37,6 +37,11 @@ void Entity::updateHithox()
     hitbox.y = position.y-animatedSprite.getCellHeight();
 }
 
+Rectangle Entity::getHitbox()
+{
+    return hitbox;
+}
+
 int Entity::gethealth()
 {
     return health;

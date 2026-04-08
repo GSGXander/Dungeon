@@ -33,3 +33,23 @@ void hazard::draw()
     animatedSprite.getCellWidth(), animatedSprite.getCellHeight()}, 
     {position.x-animatedSprite.getCellWidth()/2, position.y-animatedSprite.getCellHeight()}, WHITE);
 }
+
+float hazard::getPositionX()
+{
+    return position.x;
+}
+
+float hazard::getPositionY()
+{
+    return position.y;
+}
+
+void hazard::setPositionX(int newX)
+{
+    position.x = newX;
+}
+
+void hazard::setPositionY(int newY)
+{
+    position.y = newY;
+}

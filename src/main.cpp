@@ -4,6 +4,7 @@
 #include "gui/menu.hpp"
 #include "actors/Entity.hpp"
 #include "actors/Player.hpp"
+#include "obj/hazard.hpp"
 
 int main()
 {
@@ -11,16 +12,19 @@ int main()
 ////////////
 const int screenWidth = 1280;
 const int screenHeight = 720;
-int gameMode = 1; // 0 = menu, 1 = game, 2 = transition
+int gameMode = 0; // 0 = menu, 1 = game, 2 = transition
 int currentMenu = 0;
 bool endGame = false;
 bool debug = false;
 float transitionScreen = 0.0f;
 float deltaTime;
 
+float playerInvcTimer;
+
 ////Methods/////
 
 void transition(float opacity);
+void playerStartState(Player *user);
 
 ////////////
 InitWindow(screenWidth, screenHeight, "Dungeon");
@@ -40,7 +44,11 @@ std::vector<slider> optionsSliders =  {
 std::vector<button> optionsButtons = {
 {{screenWidth/4 , screenHeight/2 + 300.0f}, "Back", "resources/gui/button_Resize.png"}};
 
-menu menuManager[3] = {{mainButtons}, {{optionsButtons},{optionsSliders}}, {optionsButtons}};
+std::vector<button> pauseButtons = {
+{{screenWidth/2, screenHeight/2 - 100.0f}, "Resume", "resources/gui/button_Resize.png"},
+{{screenWidth/2, screenHeight/2 + 100.0f}, "Quit", "resources/gui/button_Resize.png"}};
+
+menu menuManager[4] = {{mainButtons}, {{optionsButtons},{optionsSliders}}, {optionsButtons}, {pauseButtons}};
 
 ////Textures///
 Texture2D logo = LoadTexture("resources/Default.png");
@@ -58,9 +66,14 @@ Rectangle tutorial_room[5] = {
 Rectangle *currentRoom = tutorial_room;
 int currentRoomSize = 5;
 
-////////////
+////Hazards////
 
-Player player(0, 0, 0, {150, screenHeight - 50.0f}, "resources/playerMovementTest-Sheet.png", 2, 2);
+hazard testHazard({928.0f, 670.0f}, "resources/hazards/testDanger.png", false, true, 1, 1);
+
+///////////////
+
+
+Player player(0, 0, 0, {150, 670.0f}, "resources/playerMovementTest-Sheet.png", 2, 2);
 Music music = LoadMusicStream("resources/music/hazy_maze_cave.mp3");
 music.looping = true;
 SetMusicVolume(music, (float)(optionsSliders[1].getValue())/100.0f);
@@ -95,6 +108,7 @@ while(!WindowShouldClose() && !endGame)
             {
                 case 0:         // Start button
                     gameMode = 2;
+                    playerStartState(&player);
                     break;
 
                 case 1:         // Options Button
@@ -110,7 +124,7 @@ while(!WindowShouldClose() && !endGame)
                     break;
 
                 default:
-                break;
+                    break;
             }            
             break;
         
@@ -155,6 +169,28 @@ while(!WindowShouldClose() && !endGame)
                 currentMenu = 0;
             }
             break;
+        
+        case 3:     //Pause Menu
+            menuManager[3].draw();
+            DrawText("Paused", screenWidth/2 - MeasureText("Paused", 30)/2, screenHeight/2 - 300.0f, 30, BLACK);
+            switch(menuManager[3].isPressed(GetMousePosition(), IsMouseButtonPressed(MOUSE_BUTTON_LEFT)))
+            {
+                case 0:
+                    gameMode = 1;
+                    ResumeMusicStream(music);
+                    break;
+                case 1:
+                    currentMenu = 0;
+                    StopMusicStream(music);
+                    break;
+                default:
+                    break;
+            }
+            if(IsKeyPressed(KEY_P))
+            {
+                gameMode = 1;
+            }
+            break;
             
         default:
             currentMenu = 0;
@@ -170,8 +206,11 @@ while(!WindowShouldClose() && !endGame)
         }
 
         player.setVerticalSpeed(player.getVerticalSpeed() - (25.0f * deltaTime)); //Gravity 
-        player.movementKeyCheck(deltaTime);
-        
+        if(player.ableToMove())
+        {
+            player.movementKeyCheck(deltaTime);
+        }
+
         if(player.getHorizontalSpeed() != 0.0f)
         {
             player.setPositionX(player.getPositionX() + player.getHorizontalSpeed());
@@ -186,16 +225,45 @@ while(!WindowShouldClose() && !endGame)
         {
             Rectangle *Rect = currentRoom + i;
             DrawRectangleRec(*Rect, BLUE);
-            player.playerCollisionCheck(currentRoom, currentRoomSize);
         }
+        player.playerCollisionCheck(currentRoom, currentRoomSize);
 
-        if(player.getHorizontalSpeed() != 0.0f)
+        if(player.getHorizontalSpeed() != 0.0f) //Player Movement Animations
         {
             player.draw(1);
         }
         else
         {
             player.draw(0,1);
+        }
+
+        if(playerInvcTimer > 0.0f)
+        {
+            playerInvcTimer -= 1.0f/60.0f;
+            if(playerInvcTimer <= 0.0f)
+            {
+                player.setInvc(false);
+            }
+        }
+
+        testHazard.draw();
+        if(testHazard.checkCollision(player.getHitbox()) && !player.isInvc())
+        {
+            player.sethealth(player.gethealth()-1);
+            player.setInvc(true);
+            playerInvcTimer = 2.0f;
+            player.setCanMove(false);
+            
+            player.setVerticalSpeed(500.0f * deltaTime);
+            if(player.getPositionX() >= testHazard.getPositionX())
+            {
+                player.setHorizontalSpeed(150.0f * deltaTime);
+            }
+            else
+            {
+                player.setHorizontalSpeed(-150.0f * deltaTime);
+            }
+            
         }
 
         DrawTexture(hudPlate, 10.0f, 10.0f, WHITE);
@@ -209,6 +277,12 @@ while(!WindowShouldClose() && !endGame)
         {
             debug = !debug;
         }
+        if(IsKeyPressed(KEY_P))
+        {
+            currentMenu = 3;
+            gameMode = 0;
+            PauseMusicStream(music);
+        }
 
         if(debug)
         {
@@ -218,6 +292,7 @@ while(!WindowShouldClose() && !endGame)
             DrawText(TextFormat("VSPEED: %f", player.getVerticalSpeed()), 0,150,50,WHITE);
             DrawText(TextFormat("HSPEED: %f", player.getHorizontalSpeed()), 0,200,50,WHITE);
             DrawText(TextFormat("Direction: %f", player.getDirection()), 0,250,50,WHITE);
+            DrawText(TextFormat("ITimer: %f", playerInvcTimer), 0,300,50,WHITE);
         }
 
     }
@@ -242,4 +317,13 @@ CloseWindow();
 void transition(float opacity)
 {
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, opacity));
+}
+
+void playerStartState(Player *user)
+{
+    user->setPositionX(150.0f);
+    user->setPositionY(670.0f);
+    user->setInvc(false);
+    user->setCanMove(true);
+    user->sethealth(3);
 }
