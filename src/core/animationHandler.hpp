@@ -13,6 +13,7 @@ class animationHandler
         int cellXMax;
         float cellSizeX;                //Size of each cell horizontally (image size / number of horizontal cells)
         float cellSizeY;                //Size of each cell vertically(image size / number of vertical cells)
+        bool flipped;
         Texture2D spriteSheet; 
     
     public:
@@ -20,7 +21,11 @@ class animationHandler
 
         void playAnimation(int action);
 
-        void playAnimation(int action, int speed);
+        void playAnimation(int action, int frameCount);
+
+        void playAnimation(int action, int frameCount, int speed);
+
+        void flipSprite(bool flip);
 
         float getCellWidth();
         

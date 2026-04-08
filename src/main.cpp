@@ -9,12 +9,14 @@ int main()
 {
 
 ////////////
-const int screenWidth = 1920;
-const int screenHeight = 1080;
-int gameMode = 0; // 0 = menu, 1 = game, 2 = transition
+const int screenWidth = 1280;
+const int screenHeight = 720;
+int gameMode = 1; // 0 = menu, 1 = game, 2 = transition
 int currentMenu = 0;
 bool endGame = false;
+bool debug = false;
 float transitionScreen = 0.0f;
+float deltaTime;
 
 ////Methods/////
 
@@ -42,7 +44,23 @@ menu menuManager[3] = {{mainButtons}, {{optionsButtons},{optionsSliders}}, {opti
 
 ////Textures///
 Texture2D logo = LoadTexture("resources/Default.png");
+Texture2D hudPlate = LoadTexture("resources/gui/hudPlate.png");
+Texture2D profile = LoadTexture("resources/gui/knightProfile.png");
 
+////Rooms////
+
+Rectangle tutorial_room[5] = {
+    {0, 670.0f, 1280.0f, 50.0f},        //floor
+    {0, 0, 1280.0f, 50.0f},             //ceiling
+    {0, 50.0f, 50.0f, 620.0f},          //left wall
+    {1230.0f, 50.0f, 50.0f, 620.0f},    //right wall
+    {615.0f, 520.0f, 50.0f, 150.0f}};   //barrier
+Rectangle *currentRoom = tutorial_room;
+int currentRoomSize = 5;
+
+////////////
+
+Player player(0, 0, 0, {150, screenHeight - 50.0f}, "resources/playerMovementTest-Sheet.png", 2, 2);
 
 ////////////
 
@@ -52,9 +70,18 @@ SetTargetFPS(60);
 while(!WindowShouldClose() && !endGame)
 {
     BeginDrawing();
-    ClearBackground(GRAY);
+    deltaTime = GetFrameTime();
 
-    if (gameMode == 0)
+    if(gameMode != 1)
+    {
+        ClearBackground(GRAY);
+    }
+    else
+    {
+        ClearBackground(BLACK);
+    }
+    
+    if (gameMode == 0) // Menu Mode
     {
         switch (currentMenu)
         {
@@ -131,12 +158,60 @@ while(!WindowShouldClose() && !endGame)
             break;
         }
     }
-    else if (gameMode == 1)
+    else if (gameMode == 1) // Gameplay Mode
     {
-        ClearBackground(BLACK);
-        DrawText("Insert game here", screenWidth/2 - MeasureText("Insert game here", 50)/2, screenHeight/2, 50, RED);
+        player.setVerticalSpeed(player.getVerticalSpeed() - (25.0f * deltaTime)); //Gravity 
+        player.movementKeyCheck(deltaTime);
+        
+        if(player.getHorizontalSpeed() != 0.0f)
+        {
+            player.setPositionX(player.getPositionX() + player.getHorizontalSpeed());
+        }
+        if(player.getVerticalSpeed() != 0.0f)
+        {
+            player.setPositionY(player.getPositionY() - player.getVerticalSpeed());
+        }
+        player.updateHithox();
+
+        for(int i = 0; i < currentRoomSize; i++)
+        {
+            Rectangle *Rect = currentRoom + i;
+            DrawRectangleRec(*Rect, BLUE);
+            player.playerCollisionCheck(currentRoom, currentRoomSize);
+        }
+
+        if(player.getHorizontalSpeed() != 0.0f)
+        {
+            player.draw(1);
+        }
+        else
+        {
+            player.draw(0,1);
+        }
+
+        DrawTexture(hudPlate, 10.0f, 10.0f, WHITE);
+        DrawTexture(profile, 25.0f, 15.0f, WHITE);
+        for(int i = 0; i < player.gethealth(); i++)
+        {
+            DrawRectangle(130.0f + (27.0f*i), 25.0f, 25.0f, 70.0f, GREEN);
+        }
+        
+        if(IsKeyPressed(KEY_GRAVE))
+        {
+            debug = !debug;
+        }
+
+        if(debug)
+        {
+            DrawText(TextFormat("X Cord: %f", player.getPositionX()), 0,0,50,WHITE);
+            DrawText(TextFormat("Y Cord: %f", player.getPositionY()), 0,50,50,WHITE);
+            DrawText(TextFormat("Can Jump: %d", player.ableToJump()), 0,100,50,WHITE);
+            DrawText(TextFormat("VSPEED: %f", player.getVerticalSpeed()), 0,150,50,WHITE);
+            DrawText(TextFormat("HSPEED: %f", player.getHorizontalSpeed()), 0,200,50,WHITE);
+        }
+
     }
-    else
+    else // Transitional Mode
     {
         menuManager[currentMenu].draw();
         DrawTexture(logo, screenWidth/2 - logo.width/2, screenHeight/2 - logo.height/2 - 200.0f, WHITE);
