@@ -128,3 +128,23 @@ void Player::setCanJump(bool boo)
 {
     canJump = boo;
 }
+
+int Player::getHlthUpgrade()
+{
+    return hlthUpgrade;
+}
+
+void Player::setHlthUpgrade(int new_hUpg)
+{
+    hlthUpgrade = new_hUpg;
+}
+
+float Player::getSpdUpgrade()
+{
+    return spdUpgrade;
+}
+
+void Player::setSpdUpgrade(float new_sUpg)
+{
+    spdUpgrade = new_sUpg;
+}

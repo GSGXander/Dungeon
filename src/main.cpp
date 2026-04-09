@@ -48,7 +48,11 @@ std::vector<button> pauseButtons = {
 {{screenWidth/2, screenHeight/2 - 100.0f}, "Resume", "resources/gui/button_Resize.png"},
 {{screenWidth/2, screenHeight/2 + 100.0f}, "Quit", "resources/gui/button_Resize.png"}};
 
-menu menuManager[4] = {{mainButtons}, {{optionsButtons},{optionsSliders}}, {optionsButtons}, {pauseButtons}};
+std::vector<button> gameOverUpgrade = {
+{{screenWidth/2 - 250.0f, screenHeight/2 + 200.0f}, "resources/gui/plusButton.png"},
+{{screenWidth/2 + 250.0f, screenHeight/2 + 200.0f}, "resources/gui/plusButton.png"}};
+
+menu menuManager[5] = {{mainButtons}, {{optionsButtons},{optionsSliders}}, {optionsButtons}, {pauseButtons}, {gameOverUpgrade}};
 
 ////Textures///
 Texture2D logo = LoadTexture("resources/Default.png");
@@ -83,7 +87,7 @@ SetMusicVolume(music, (float)(optionsSliders[1].getValue())/100.0f);
 SetTargetFPS(60);
 
 
-while(!WindowShouldClose() && !endGame)
+while(!endGame)
 {
     BeginDrawing();
     deltaTime = GetFrameTime();
@@ -142,6 +146,7 @@ while(!WindowShouldClose() && !endGame)
                     break;
 
                 case 1:
+                    SetMusicVolume(music, (float)(menuManager[1].getSliderValue(1))/100.0f);
                     break;
 
                 case 2:
@@ -177,7 +182,6 @@ while(!WindowShouldClose() && !endGame)
             {
                 case 0:
                     gameMode = 1;
-                    ResumeMusicStream(music);
                     break;
                 case 1:
                     currentMenu = 0;
@@ -186,9 +190,31 @@ while(!WindowShouldClose() && !endGame)
                 default:
                     break;
             }
-            if(IsKeyPressed(KEY_P))
+            if(IsKeyPressed(KEY_ESCAPE))
             {
                 gameMode = 1;
+            }
+            break;
+        
+        case 4:     //Game Over Screen
+            menuManager[4].draw();
+            DrawText("GAME OVER", screenWidth/2 - MeasureText("GAME OVER", 50)/2, screenHeight/2 - 200.0f, 50, BLACK);
+            DrawText("Upgrade Health", screenWidth/2 - 250.0f - MeasureText("Upgrade Health", 50)/2, screenHeight/2 + 100.0f, 50, BLACK);
+            DrawText("Upgrade Speed", screenWidth/2 + 250.0f - MeasureText("Upgrade Speed", 50)/2, screenHeight/2 + 100.0f, 50, BLACK);
+            DrawText(TextFormat("Current Health Upgrade: %i", player.getHlthUpgrade()), screenWidth/2 - 250.0f - MeasureText("Current Health Upgrade: ", 30)/2, screenHeight/2 + 300.0f, 30, BLACK);
+            DrawText(TextFormat("Current Speed Upgrade: %i", (int)player.getSpdUpgrade()/10), screenWidth/2 + 250.0f - MeasureText("Current Speed Upgrade: ", 30)/2, screenHeight/2 + 300.0f, 30, BLACK);
+            switch(menuManager[4].isPressed(GetMousePosition(), IsMouseButtonPressed(MOUSE_BUTTON_LEFT)))
+            {
+                case 0:
+                    player.setHlthUpgrade(player.getHlthUpgrade() + 1);
+                    currentMenu = 0;
+                    break;
+                case 1:
+                    player.setSpdUpgrade(player.getSpdUpgrade() + 10.0f);
+                    currentMenu = 0;
+                    break;
+                default:
+                    break;
             }
             break;
             
@@ -263,7 +289,13 @@ while(!WindowShouldClose() && !endGame)
             {
                 player.setHorizontalSpeed(-150.0f * deltaTime);
             }
-            
+        }
+
+        if(player.gethealth() <= 0)
+        {
+            currentMenu = 4;
+            gameMode = 0;
+            StopMusicStream(music);
         }
 
         DrawTexture(hudPlate, 10.0f, 10.0f, WHITE);
@@ -277,7 +309,7 @@ while(!WindowShouldClose() && !endGame)
         {
             debug = !debug;
         }
-        if(IsKeyPressed(KEY_P))
+        if(IsKeyPressed(KEY_ESCAPE))
         {
             currentMenu = 3;
             gameMode = 0;
@@ -296,7 +328,7 @@ while(!WindowShouldClose() && !endGame)
         }
 
     }
-    else // Transitional Mode
+    else if(gameMode == 2)// Transitional Mode
     {
         menuManager[currentMenu].draw();
         DrawTexture(logo, screenWidth/2 - logo.width/2, screenHeight/2 - logo.height/2 - 200.0f, WHITE);
@@ -325,5 +357,6 @@ void playerStartState(Player *user)
     user->setPositionY(670.0f);
     user->setInvc(false);
     user->setCanMove(true);
-    user->sethealth(3);
+    user->sethealth(3+user->getHlthUpgrade());
+    user->setspeed(user->getspeed()+user->getSpdUpgrade());
 }

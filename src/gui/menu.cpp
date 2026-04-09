@@ -15,7 +15,10 @@ int menu::isPressed(Vector2 cursorLocation, bool isMousePressed)
     for(auto& Slider : sliders)
     {
         buttonId++;
-        Slider.isPressed(cursorLocation, isMousePressed);
+        if(Slider.isPressed(cursorLocation, isMousePressed))
+        {
+            return buttonId;
+        }
     }
     for(auto& Button : buttons)
     {
@@ -26,6 +29,11 @@ int menu::isPressed(Vector2 cursorLocation, bool isMousePressed)
         }
     }
     return -5;
+}
+
+int menu::getSliderValue(int Index)
+{
+    return sliders[Index].getValue();
 }
 
 void menu::draw()
