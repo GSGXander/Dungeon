@@ -85,6 +85,11 @@ void animationHandler::flipSprite(bool flip)
     flipped = flip;
 }
 
+bool animationHandler::getFlipped()
+{
+    return flipped;
+}
+
 float animationHandler::getCellWidth()
 {
     return cellSizeX;

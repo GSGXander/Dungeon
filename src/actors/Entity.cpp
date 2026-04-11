@@ -8,6 +8,7 @@ Entity::Entity(int hp, float spd, Vector2 pos, const char *sheetLocation, int sp
     position = pos;
     verticalSpeed = 0.0f;
     horizontalSpeed = 0.0f;
+    direction = -1.0f;
     //spriteSheet = LoadTexture(sheetLocation);
     hitbox = {position.x-animatedSprite.getCellWidth()/2, position.y-animatedSprite.getCellHeight(), 
         animatedSprite.getCellWidth(), animatedSprite.getCellHeight()};
@@ -17,16 +18,16 @@ void Entity::draw(int action)
 {
     animatedSprite.playAnimation(action);
     DrawTextureRec(animatedSprite.getSpriteSheet(), (Rectangle) {animatedSprite.getSpriteX(), animatedSprite.getSpriteY(), 
-    animatedSprite.getCellWidth(), animatedSprite.getCellHeight()}, 
+    direction*animatedSprite.getCellWidth(), animatedSprite.getCellHeight()}, 
     {position.x-animatedSprite.getCellWidth()/2, position.y-animatedSprite.getCellHeight()}, WHITE);
 }
 
 void Entity::draw(int action, int frameCount)
 {
-    DrawRectangleRec(hitbox, PURPLE);
+    //DrawRectangleRec(hitbox, PURPLE);
     animatedSprite.playAnimation(action, frameCount);
     DrawTextureRec(animatedSprite.getSpriteSheet(), (Rectangle) {animatedSprite.getSpriteX(), animatedSprite.getSpriteY(), 
-    animatedSprite.getCellWidth(), animatedSprite.getCellHeight()}, 
+    direction*animatedSprite.getCellWidth(), animatedSprite.getCellHeight()}, 
     {position.x-animatedSprite.getCellWidth()/2, position.y-animatedSprite.getCellHeight()}, WHITE);
 }
 
@@ -34,6 +35,11 @@ void Entity::updateHithox()
 {
     hitbox.x = position.x-animatedSprite.getCellWidth()/2;
     hitbox.y = position.y-animatedSprite.getCellHeight();
+}
+
+Rectangle Entity::getHitbox()
+{
+    return hitbox;
 }
 
 int Entity::gethealth()
@@ -94,4 +100,9 @@ float Entity::getHorizontalSpeed()
 void Entity::setHorizontalSpeed(float new_speed)
 {
     horizontalSpeed = new_speed;
+}
+
+float Entity::getDirection()
+{
+    return direction;
 }

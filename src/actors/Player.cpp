@@ -14,26 +14,32 @@ Player::Player(int dCounter, float sUpgrade, int hUpgrade, Vector2 position, con
 
 void Player::movementKeyCheck(float delta)
 {
-    if(canMove)
+    if(IsKeyDown(KEY_A))
     {
-        if(IsKeyDown(KEY_A))
+        horizontalSpeed = -speed * delta;
+        if(direction < 0.0f)
         {
-            horizontalSpeed = -speed * delta;
-        }   
-        else if(IsKeyDown(KEY_D))
-        {
-            horizontalSpeed = speed * delta;
+            direction = 1.0f;
         }
-        else
+    }   
+    else if(IsKeyDown(KEY_D))
+    {
+        horizontalSpeed = speed * delta;
+        if(direction > 0.0f)
         {
-            horizontalSpeed = 0;
-        }
-
-        if(IsKeyPressed(KEY_SPACE) && canJump)
-        {
-            verticalSpeed = 750.0f * delta;
+            direction = -1.0f;
         }
     }
+    else
+    {
+        horizontalSpeed = 0;
+    }
+
+    if(IsKeyPressed(KEY_SPACE) && canJump)
+    {
+        verticalSpeed = 750.0f * delta;
+    }
+
 }
 
 void Player::playerCollisionCheck(Rectangle *Rec, int roomSize)
@@ -67,6 +73,10 @@ void Player::playerCollisionCheck(Rectangle *Rec, int roomSize)
         }
     }
     canJump = onGround;
+    if(!canMove && onGround)
+    {
+        canMove = true;
+    }
 }
 
 int Player::getDeaths()
@@ -117,4 +127,24 @@ bool Player::ableToJump()
 void Player::setCanJump(bool boo)
 {
     canJump = boo;
+}
+
+int Player::getHlthUpgrade()
+{
+    return hlthUpgrade;
+}
+
+void Player::setHlthUpgrade(int new_hUpg)
+{
+    hlthUpgrade = new_hUpg;
+}
+
+float Player::getSpdUpgrade()
+{
+    return spdUpgrade;
+}
+
+void Player::setSpdUpgrade(float new_sUpg)
+{
+    spdUpgrade = new_sUpg;
 }

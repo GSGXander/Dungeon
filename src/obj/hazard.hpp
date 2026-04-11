@@ -19,4 +19,9 @@ class hazard
         bool checkCollision(Rectangle entityHitbox);
 
         void draw();
+
+        float getPositionX();
+        float getPositionY();
+        void setPositionX(int newX);
+        void setPositionY(int newY);
 };

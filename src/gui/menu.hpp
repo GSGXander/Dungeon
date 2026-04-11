@@ -16,5 +16,7 @@ class menu
 
         int isPressed(Vector2 cursorLocation, bool isMousePressed);
 
+        int getSliderValue(int Index);
+
         void draw();
 };

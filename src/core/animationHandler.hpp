@@ -27,6 +27,8 @@ class animationHandler
 
         void flipSprite(bool flip);
 
+        bool getFlipped();
+
         float getCellWidth();
         
         float getCellHeight();

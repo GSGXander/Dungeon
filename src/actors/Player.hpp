@@ -33,4 +33,10 @@ class Player : public Entity
     
         bool ableToJump();
         void setCanJump(bool boo);
+
+        int getHlthUpgrade();
+        void setHlthUpgrade(int new_hUpg);
+
+        float getSpdUpgrade();
+        void setSpdUpgrade(float new_sUpg);
 };
