@@ -36,6 +36,11 @@ int menu::getSliderValue(int Index)
     return sliders[Index].getValue();
 }
 
+void menu:: setSliderValue(int Index, int val)
+{
+    sliders[Index].setValue(val);
+}
+
 void menu::draw()
 {
     for(auto& Slider : sliders)

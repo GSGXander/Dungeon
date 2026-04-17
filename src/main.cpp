@@ -5,6 +5,11 @@
 #include "actors/Entity.hpp"
 #include "actors/Player.hpp"
 #include "obj/hazard.hpp"
+#include <src/nlohmann/json.hpp>
+#include <fstream>
+#include <iostream>
+
+using json = nlohmann::json;
 
 int main()
 {
@@ -18,13 +23,16 @@ bool endGame = false;
 bool debug = false;
 float transitionScreen = 0.0f;
 float deltaTime;
-
 float playerInvcTimer;
+json saveData;
 
 ////Methods/////
 
 void transition(float opacity);
 void playerStartState(Player *user);
+void playerDataSave(Player *user);
+void volumeDataSave(int masterVolume, int musicVolume, int effectsVolume);
+void createDefaultSave();
 
 ////////////
 InitWindow(screenWidth, screenHeight, "Dungeon");
@@ -86,6 +94,24 @@ SetMusicVolume(music, (float)(optionsSliders[1].getValue())/100.0f);
 
 SetTargetFPS(60);
 
+std::ifstream inFile("saveData.json");
+if(inFile.is_open())
+{
+    inFile >> saveData;
+
+    player.setDeaths(saveData["player"]["deaths"]);
+    player.setHlthUpgrade(saveData["player"]["healthBonus"]);
+    player.setSpdUpgrade(saveData["player"]["speedBonus"]);
+    menuManager[1].setSliderValue(0, saveData["settings"]["masterVolume"]);
+    menuManager[1].setSliderValue(1, saveData["settings"]["musicVolume"]);
+    menuManager[1].setSliderValue(2, saveData["settings"]["effectsVolume"]);
+
+    inFile.close();
+}
+else
+{
+    createDefaultSave();
+}
 
 while(!endGame)
 {
@@ -154,6 +180,7 @@ while(!endGame)
 
                 case 3:         // Back Button
                     currentMenu = 0;
+                    volumeDataSave(menuManager[1].getSliderValue(0), menuManager[1].getSliderValue(1), menuManager[1].getSliderValue(2));
                     break;
 
                 default:
@@ -201,6 +228,7 @@ while(!endGame)
             DrawText("GAME OVER", screenWidth/2 - MeasureText("GAME OVER", 50)/2, screenHeight/2 - 200.0f, 50, BLACK);
             DrawText("Upgrade Health", screenWidth/2 - 250.0f - MeasureText("Upgrade Health", 50)/2, screenHeight/2 + 100.0f, 50, BLACK);
             DrawText("Upgrade Speed", screenWidth/2 + 250.0f - MeasureText("Upgrade Speed", 50)/2, screenHeight/2 + 100.0f, 50, BLACK);
+            DrawText(TextFormat("Death Count: %i", player.getDeaths()), 0,0,50,BLACK);
             DrawText(TextFormat("Current Health Upgrade: %i", player.getHlthUpgrade()), screenWidth/2 - 250.0f - MeasureText("Current Health Upgrade: ", 30)/2, screenHeight/2 + 300.0f, 30, BLACK);
             DrawText(TextFormat("Current Speed Upgrade: %i", (int)player.getSpdUpgrade()/10), screenWidth/2 + 250.0f - MeasureText("Current Speed Upgrade: ", 30)/2, screenHeight/2 + 300.0f, 30, BLACK);
             switch(menuManager[4].isPressed(GetMousePosition(), IsMouseButtonPressed(MOUSE_BUTTON_LEFT)))
@@ -208,10 +236,12 @@ while(!endGame)
                 case 0:
                     player.setHlthUpgrade(player.getHlthUpgrade() + 1);
                     currentMenu = 0;
+                    playerDataSave(&player);
                     break;
                 case 1:
                     player.setSpdUpgrade(player.getSpdUpgrade() + 10.0f);
                     currentMenu = 0;
+                    playerDataSave(&player);
                     break;
                 default:
                     break;
@@ -295,6 +325,7 @@ while(!endGame)
         {
             currentMenu = 4;
             gameMode = 0;
+            player.setDeaths(player.getDeaths()+1);
             StopMusicStream(music);
         }
 
@@ -359,4 +390,56 @@ void playerStartState(Player *user)
     user->setCanMove(true);
     user->sethealth(3+user->getHlthUpgrade());
     user->setspeed(user->getspeed()+user->getSpdUpgrade());
+}
+
+void playerDataSave(Player *user)
+{
+    std::ifstream file("saveData.json");
+    json data;
+
+    if(file.is_open())
+    {
+        file >> data;
+        file.close();
+
+        data["player"]["deaths"] = user->getDeaths();
+        data["player"]["healthBonus"] = user->getHlthUpgrade();
+        data["player"]["speedBonus"] = user->getSpdUpgrade();
+
+        std::ofstream outFile("saveData.json");
+        outFile << data.dump(4);
+        outFile.close();
+    }
+}
+
+void volumeDataSave(int masterVolume, int musicVolume, int effectsVolume)
+{
+    std::ifstream file("saveData.json");
+    json data;
+
+    if(file.is_open())
+    {
+        file >> data;
+        file.close();
+
+        data["settings"]["masterVolume"] = masterVolume;
+        data["settings"]["musicVolume"] = musicVolume;
+        data["settings"]["effectsVolume"] = effectsVolume;
+
+        std::ofstream outFile("saveData.json");
+        outFile << data.dump(4);
+        outFile.close();
+    }
+}
+
+void createDefaultSave()
+{
+    json data;
+
+    data["player"] = {{"deaths", 0}, {"healthBonus", 0}, {"speedBonus", 0}};
+    data["settings"] = {{"masterVolume", 50}, {"musicVolume", 50}, {"effectsVolume", 50}};
+    data["achievements"] = json::array({{{"id", 0}, {"unlocked", false}}, {{"id", 1}, {"unlocked", false}}});
+
+    std::ofstream file("saveData.json");
+    file << data.dump(4);
 }
