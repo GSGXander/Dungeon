@@ -8,6 +8,8 @@ class Player : public Entity
         int deathCounter;
         float spdUpgrade;
         int hlthUpgrade;
+        float attackDirection;
+        Vector2 attackLoc;
         bool invc;
         bool canMove;
         bool canAttack;
@@ -39,4 +41,7 @@ class Player : public Entity
 
         float getSpdUpgrade();
         void setSpdUpgrade(float new_sUpg);
+
+        float getAttackDirection();
+        Vector2 getAttackLocation();
 };

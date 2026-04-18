@@ -56,7 +56,32 @@ void animationHandler::playAnimation(int action, int frameCount)
     }
 }
 
+bool animationHandler::playAnimationOnce(int action, int frameCount, int speed)
+{
+    bool isAnimationOver = false;
 
+    if(((float)action * cellSizeY) == spriteY)
+    {
+        frameCounter++;
+        if(frameCounter >= (60/speed))
+        {
+            frameCounter = 0;
+            spriteX += cellSizeX;
+            if(spriteX >= (float)(cellSizeX*frameCount))
+            {
+                isAnimationOver = true;
+                spriteX = 0.0f;
+            }
+        }
+    }
+    else
+    {
+        spriteX = 0.0f;
+        spriteY = (float)action * cellSizeY;
+    }
+    
+    return isAnimationOver;
+}
 
 /*void animationHandler::playAnimation(int action, int speed)
 {

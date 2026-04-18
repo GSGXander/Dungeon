@@ -80,6 +80,7 @@ int currentRoomSize = 5;
 
 ////Hazards////
 
+hazard playerAttack({-100,-100}, "resources/slash-Sheet.png", true, true, 5, 1);
 hazard testHazard({928.0f, 670.0f}, "resources/hazards/testDanger.png", false, true, 1, 1);
 
 ///////////////
@@ -284,7 +285,7 @@ while(!endGame)
         }
         player.playerCollisionCheck(currentRoom, currentRoomSize);
 
-        if(player.getHorizontalSpeed() != 0.0f) //Player Movement Animations
+        if(player.getHorizontalSpeed() != 0.0f)
         {
             player.draw(1);
         }
@@ -299,6 +300,17 @@ while(!endGame)
             if(playerInvcTimer <= 0.0f)
             {
                 player.setInvc(false);
+            }
+        }
+
+        if(!player.ableToAttack())
+        {
+            playerAttack.setDirection(player.getAttackDirection());
+            playerAttack.setPositionX(player.getAttackLocation().x - 80.0f*playerAttack.getDirection());
+            playerAttack.setPositionY(player.getAttackLocation().y);
+            if(!playerAttack.timedDraw(0,4,15))
+            {
+                player.setCanAttack(true);
             }
         }
 
@@ -356,6 +368,7 @@ while(!endGame)
             DrawText(TextFormat("HSPEED: %f", player.getHorizontalSpeed()), 0,200,50,WHITE);
             DrawText(TextFormat("Direction: %f", player.getDirection()), 0,250,50,WHITE);
             DrawText(TextFormat("ITimer: %f", playerInvcTimer), 0,300,50,WHITE);
+            DrawText(TextFormat("Can Attack: %d", player.ableToAttack()), 0,350,50,WHITE);
         }
 
     }
@@ -390,6 +403,7 @@ void playerStartState(Player *user)
     user->setCanMove(true);
     user->sethealth(3+user->getHlthUpgrade());
     user->setspeed(user->getspeed()+user->getSpdUpgrade());
+    user->setVerticalSpeed(0.0f);
 }
 
 void playerDataSave(Player *user)
