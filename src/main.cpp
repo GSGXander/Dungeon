@@ -5,6 +5,7 @@
 #include "actors/Entity.hpp"
 #include "actors/Player.hpp"
 #include "obj/hazard.hpp"
+#include "core/achievement.hpp"
 #include <src/nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
@@ -32,6 +33,7 @@ void transition(float opacity);
 void playerStartState(Player *user);
 void playerDataSave(Player *user);
 void volumeDataSave(int masterVolume, int musicVolume, int effectsVolume);
+void achievementDataSave(int index, bool setUnlocked);
 void createDefaultSave();
 
 ////////////
@@ -67,16 +69,35 @@ Texture2D logo = LoadTexture("resources/Default.png");
 Texture2D hudPlate = LoadTexture("resources/gui/hudPlate.png");
 Texture2D profile = LoadTexture("resources/gui/knightProfile.png");
 
+////Achievements////
+achievement achievementList[3] = {
+    {"Youch", "Die for the first time.", "resources/hazards/testDanger.png"},
+    {"Unobtainable", "This one just kinda sits here.", "resources/hazards/testDanger.png"},
+    {"Unobtainable 2", "This one ALSO just kinda sits here.", "resources/hazards/testDanger.png"}};
 ////Rooms////
 
 Rectangle tutorial_room[5] = {
-    {0, 670.0f, 1280.0f, 50.0f},        //floor
+    {0, 670.0f, 1310.0f, 50.0f},        //floor
     {0, 0, 1280.0f, 50.0f},             //ceiling
     {0, 50.0f, 50.0f, 620.0f},          //left wall
-    {1230.0f, 50.0f, 50.0f, 620.0f},    //right wall
+    {1230.0f, 50.0f, 50.0f, 470.0f},    //right wall
     {615.0f, 520.0f, 50.0f, 150.0f}};   //barrier
+Rectangle interlude_room[5] = {
+    {0, 50.0f, 50.0f, 470.0f},          //left wall
+    {1230.0f, 50.0f, 50.0f, 620.0f},    //right wall
+    {0, 0, 1280.0f, 50.0f},             //ceiling
+    {-20, 670.0f, 460.0f, 50.0f},       //left floor
+    {840.0f, 670.0f, 440.0f, 50.0f}};   //right floor
+Rectangle dragon_room[5] = {
+    {0, 50.0f, 50.0f, 620.0f},          //left wall
+    {1230.0f, 50.0f, 50.0f, 620.0f},    //right wall
+    {0, 670.0f, 1280.0f, 50.0f},        //floor
+    {0, 0.0f, 440.0f, 50.0f},           //left ceiling
+    {840.0f, 0.0f, 440.0f, 50.0f}};     //right ceiling
+
 Rectangle *currentRoom = tutorial_room;
 int currentRoomSize = 5;
+int roomId = 0;
 
 ////Hazards////
 
@@ -106,6 +127,10 @@ if(inFile.is_open())
     menuManager[1].setSliderValue(0, saveData["settings"]["masterVolume"]);
     menuManager[1].setSliderValue(1, saveData["settings"]["musicVolume"]);
     menuManager[1].setSliderValue(2, saveData["settings"]["effectsVolume"]);
+    for(int i = 0; i < 3; i++)
+    {
+        achievementList[i].setUnlocked(saveData["achievements"][i]["unlocked"]);
+    }
 
     inFile.close();
 }
@@ -140,6 +165,8 @@ while(!endGame)
                 case 0:         // Start button
                     gameMode = 2;
                     playerStartState(&player);
+                    roomId = 0;
+                    currentRoom = tutorial_room;
                     break;
 
                 case 1:         // Options Button
@@ -195,9 +222,36 @@ while(!endGame)
                 screenWidth/2 + screenWidth/4, 
                 screenHeight/2 + screenHeight/4, 
                 ORANGE);
+            for(int i = 0; i < 3; i++)
+            {
+                if(achievementList[i].isUnlocked())
+                {
+                    DrawRectangle(screenWidth/2 - (screenWidth/2 + screenWidth/4)/2 + 10.0f + ((screenWidth/2 - 5.0f) - (screenWidth/2 - (screenWidth/2 + screenWidth/4)/2 + 10.0f))*(i%2),
+                    screenHeight/2 - (screenHeight/2 + screenHeight/4)/2 + 10.0f + (65.0f * (i/2)),
+                    (screenWidth/2 - 5.0f) - (screenWidth/2 - (screenWidth/2 + screenWidth/4)/2 + 10.0f),
+                    60.0f,
+                    GREEN);
+                }
+                else
+                {
+                    DrawRectangle(screenWidth/2 - (screenWidth/2 + screenWidth/4)/2 + 10.0f + ((screenWidth/2 - 5.0f) - (screenWidth/2 - (screenWidth/2 + screenWidth/4)/2 + 10.0f))*(i%2),
+                    screenHeight/2 - (screenHeight/2 + screenHeight/4)/2 + 10.0f + (65.0f * (i/2)),
+                    (screenWidth/2 - 5.0f) - (screenWidth/2 - (screenWidth/2 + screenWidth/4)/2 + 10.0f),
+                    60.0f,
+                    RED);
+                }
+                DrawTexture(achievementList[i].getIcon(), screenWidth/2 - (screenWidth/2 + screenWidth/4)/2 + 13.0f + ((screenWidth/2 - 5.0f) - (screenWidth/2 - (screenWidth/2 + screenWidth/4)/2 + 10.0f))*(i%2),
+                screenHeight/2 - (screenHeight/2 + screenHeight/4)/2 + 13.0f + (65.0f * (i/2)), WHITE);
+
+                DrawText(achievementList[i].getName().c_str(), screenWidth/2 - (screenWidth/2 + screenWidth/4)/2 + 73.0f + ((screenWidth/2 - 5.0f) - (screenWidth/2 - (screenWidth/2 + screenWidth/4)/2 + 10.0f))*(i%2),
+                screenHeight/2 - (screenHeight/2 + screenHeight/4)/2 + 13.0f + (65.0f * (i/2)), 20, BLACK);
+                
+                DrawText(achievementList[i].getDescription().c_str(), screenWidth/2 - (screenWidth/2 + screenWidth/4)/2 + 73.0f + ((screenWidth/2 - 5.0f) - (screenWidth/2 - (screenWidth/2 + screenWidth/4)/2 + 10.0f))*(i%2),
+                screenHeight/2 - (screenHeight/2 + screenHeight/4)/2 + 30.0f + (65.0f * (i/2)), 15, BLACK);
+            }
             DrawText("Achievements", screenWidth/2 - MeasureText("Achievements", 30)/2, screenHeight/2 - 300.0f, 30, BLACK);
             menuManager[2].draw();
-            if(menuManager[2].isPressed(GetMousePosition(), IsMouseButtonDown(MOUSE_BUTTON_LEFT)) == 0)
+            if(menuManager[2].isPressed(GetMousePosition(), IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) == 0)
             {
                 currentMenu = 0;
             }
@@ -339,6 +393,11 @@ while(!endGame)
             gameMode = 0;
             player.setDeaths(player.getDeaths()+1);
             StopMusicStream(music);
+            if(!achievementList[0].isUnlocked())
+            {
+                achievementList[0].setUnlocked(true);
+                achievementDataSave(0, true);
+            }
         }
 
         DrawTexture(hudPlate, 10.0f, 10.0f, WHITE);
@@ -359,6 +418,38 @@ while(!endGame)
             PauseMusicStream(music);
         }
 
+        switch(roomId) //new room trigger
+        {
+            case 0:
+                if(player.getPositionX() >= 1290.0f)
+                {
+                    currentRoom = interlude_room;
+                    roomId = 1;
+                    currentRoomSize = 5;
+                    player.setPositionX(10.0f);
+                }
+                break;
+            case 1:
+                if(player.getPositionX() <= 0.0f)
+                {
+                    currentRoom = tutorial_room;
+                    roomId = 0;
+                    currentRoomSize = 5;
+                    player.setPositionX(1280.0f);
+                }
+                else if(player.getPositionY() >= 745.0f)
+                {
+                    currentRoom = dragon_room;
+                    roomId = 2;
+                    currentRoomSize = 5;
+                    player.setPositionY(25.0f);
+                    player.setPositionX(640.0f);
+                }
+                break;
+            default:
+                break;
+        }
+
         if(debug)
         {
             DrawText(TextFormat("X Cord: %f", player.getPositionX()), 0,0,50,WHITE);
@@ -369,6 +460,7 @@ while(!endGame)
             DrawText(TextFormat("Direction: %f", player.getDirection()), 0,250,50,WHITE);
             DrawText(TextFormat("ITimer: %f", playerInvcTimer), 0,300,50,WHITE);
             DrawText(TextFormat("Can Attack: %d", player.ableToAttack()), 0,350,50,WHITE);
+            DrawRectangleRec(player.getHitbox(), GREEN);
         }
 
     }
@@ -446,13 +538,31 @@ void volumeDataSave(int masterVolume, int musicVolume, int effectsVolume)
     }
 }
 
+void achievementDataSave(int index, bool setUnlocked)
+{
+    std::ifstream file("saveData.json");
+    json data;
+
+    if(file.is_open())
+    {
+        file >> data;
+        file.close();
+
+        data["achievements"][index]["unlocked"] = setUnlocked;
+
+        std::ofstream outFile("saveData.json");
+        outFile << data.dump(4);
+        outFile.close();
+    }
+}
+
 void createDefaultSave()
 {
     json data;
 
     data["player"] = {{"deaths", 0}, {"healthBonus", 0}, {"speedBonus", 0}};
     data["settings"] = {{"masterVolume", 50}, {"musicVolume", 50}, {"effectsVolume", 50}};
-    data["achievements"] = json::array({{{"id", 0}, {"unlocked", false}}, {{"id", 1}, {"unlocked", false}}});
+    data["achievements"] = json::array({{{"id", 0}, {"unlocked", false}}, {{"id", 1}, {"unlocked", false}}, {{"id", 2}, {"unlocked", false}}});
 
     std::ofstream file("saveData.json");
     file << data.dump(4);

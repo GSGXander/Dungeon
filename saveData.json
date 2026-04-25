@@ -1,0 +1,26 @@
+{
+    "achievements": [
+        {
+            "id": 0,
+            "unlocked": true
+        },
+        {
+            "id": 1,
+            "unlocked": false
+        },
+        {
+            "id": 2,
+            "unlocked": false
+        }
+    ],
+    "player": {
+        "deaths": 2,
+        "healthBonus": 1,
+        "speedBonus": 10.0
+    },
+    "settings": {
+        "effectsVolume": 50,
+        "masterVolume": 50,
+        "musicVolume": 50
+    }
+}
