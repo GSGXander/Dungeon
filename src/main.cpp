@@ -5,6 +5,7 @@
 #include "actors/Entity.hpp"
 #include "actors/Player.hpp"
 #include "obj/hazard.hpp"
+#include "actors/Dragon.hpp"
 #include "core/achievement.hpp"
 #include <src/nlohmann/json.hpp>
 #include <fstream>
@@ -30,7 +31,7 @@ json saveData;
 ////Methods/////
 
 void transition(float opacity);
-void playerStartState(Player *user);
+void gameStartState(Player *user, Dragon *drag);
 void playerDataSave(Player *user);
 void volumeDataSave(int masterVolume, int musicVolume, int effectsVolume);
 void achievementDataSave(int index, bool setUnlocked);
@@ -108,6 +109,7 @@ hazard testHazard({928.0f, 670.0f}, "resources/hazards/testDanger.png", false, t
 
 
 Player player(0, 0, 0, {150, 670.0f}, "resources/playerMovementTest-Sheet.png", 2, 2);
+Dragon dragon({980.0f, 670.0f}, "resources/dragonAA223.png", 1, 1);
 Music music = LoadMusicStream("resources/music/hazy_maze_cave.mp3");
 music.looping = true;
 SetMusicVolume(music, (float)(optionsSliders[1].getValue())/100.0f);
@@ -164,7 +166,7 @@ while(!endGame)
             {
                 case 0:         // Start button
                     gameMode = 2;
-                    playerStartState(&player);
+                    gameStartState(&player, &dragon);
                     roomId = 0;
                     currentRoom = tutorial_room;
                     break;
@@ -315,7 +317,8 @@ while(!endGame)
         {
             PlayMusicStream(music);
         }
-
+        
+        ///////////////Player Frame Updates///////////////////////////
         player.setVerticalSpeed(player.getVerticalSpeed() - (25.0f * deltaTime)); //Gravity 
         if(player.ableToMove())
         {
@@ -368,7 +371,54 @@ while(!endGame)
             }
         }
 
-        testHazard.draw();
+        if(player.gethealth() <= 0)
+        {
+            currentMenu = 4;
+            gameMode = 0;
+            player.setDeaths(player.getDeaths()+1);
+            StopMusicStream(music);
+            if(!achievementList[0].isUnlocked())
+            {
+                achievementList[0].setUnlocked(true);
+                achievementDataSave(0, true);
+            }
+        }
+        ///////////////////////////////////////////////////////////////////////////
+        /////////////////Dragon Frame Updates//////////////////////////////////////
+
+        if(dragon.getPhase() != 0)
+        {
+            dragon.timerAdvance();
+
+            if(player.getPositionX() <= dragon.getPositionX())
+            {
+                dragon.setDirection(1.0f);
+            }
+            else
+            {
+                dragon.setDirection(-1.0f);
+            }
+            
+            //if dragon can attack first , delete soon
+
+            if(dragon.getCanMove()) //and cant attack
+            {
+                if(dragon.getPositionX() >= 640.0f)
+                {
+                    dragon.setPositionX(300.0f);
+                }
+                else
+                {
+                    dragon.setPositionX(980.0f);
+                }
+                dragon.setCanMove(false);
+            }
+
+            dragon.draw(0);
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        /*testHazard.draw();
         if(testHazard.checkCollision(player.getHitbox()) && !player.isInvc())
         {
             player.sethealth(player.gethealth()-1);
@@ -385,21 +435,10 @@ while(!endGame)
             {
                 player.setHorizontalSpeed(-150.0f * deltaTime);
             }
-        }
+        }*/
 
-        if(player.gethealth() <= 0)
-        {
-            currentMenu = 4;
-            gameMode = 0;
-            player.setDeaths(player.getDeaths()+1);
-            StopMusicStream(music);
-            if(!achievementList[0].isUnlocked())
-            {
-                achievementList[0].setUnlocked(true);
-                achievementDataSave(0, true);
-            }
-        }
 
+        
         DrawTexture(hudPlate, 10.0f, 10.0f, WHITE);
         DrawTexture(profile, 25.0f, 15.0f, WHITE);
         for(int i = 0; i < player.gethealth(); i++)
@@ -442,6 +481,7 @@ while(!endGame)
                     currentRoom = dragon_room;
                     roomId = 2;
                     currentRoomSize = 5;
+                    dragon.setPhase(1);
                     player.setPositionY(25.0f);
                     player.setPositionX(640.0f);
                 }
@@ -460,6 +500,9 @@ while(!endGame)
             DrawText(TextFormat("Direction: %f", player.getDirection()), 0,250,50,WHITE);
             DrawText(TextFormat("ITimer: %f", playerInvcTimer), 0,300,50,WHITE);
             DrawText(TextFormat("Can Attack: %d", player.ableToAttack()), 0,350,50,WHITE);
+            DrawText(TextFormat("Dragon MTimer: %i", dragon.getMovementTimer()), 0,400,50,WHITE);
+            DrawText(TextFormat("Dragon FrameTrack: %i", dragon.getFrameTracker()), 0,450,50,WHITE);
+            DrawText(TextFormat("Dragon Can Move: %d", dragon.getCanMove()), 0,500,50,WHITE);
             DrawRectangleRec(player.getHitbox(), GREEN);
         }
 
@@ -487,7 +530,7 @@ void transition(float opacity)
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, opacity));
 }
 
-void playerStartState(Player *user)
+void gameStartState(Player *user, Dragon *drag)
 {
     user->setPositionX(150.0f);
     user->setPositionY(670.0f);
@@ -496,6 +539,11 @@ void playerStartState(Player *user)
     user->sethealth(3+user->getHlthUpgrade());
     user->setspeed(user->getspeed()+user->getSpdUpgrade());
     user->setVerticalSpeed(0.0f);
+
+    drag->setCanAttack(false);
+    drag->setCanMove(false);
+    drag->setPhase(0);
+    drag->sethealth(100);
 }
 
 void playerDataSave(Player *user)

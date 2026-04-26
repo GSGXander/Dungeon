@@ -106,3 +106,8 @@ float Entity::getDirection()
 {
     return direction;
 }
+
+void Entity::setDirection(float newDirection)
+{
+    direction = newDirection;
+}
