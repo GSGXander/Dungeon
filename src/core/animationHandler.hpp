@@ -25,6 +25,8 @@ class animationHandler
 
         void playAnimation(int action, int frameCount, int speed);
 
+        bool playAnimationOnce(int action, int framecount, int speed);
+
         void flipSprite(bool flip);
 
         bool getFlipped();

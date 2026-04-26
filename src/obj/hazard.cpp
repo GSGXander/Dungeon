@@ -34,6 +34,24 @@ void hazard::draw()
     {position.x-animatedSprite.getCellWidth()/2, position.y-animatedSprite.getCellHeight()}, WHITE);
 }
 
+bool hazard::timedDraw(int action, int frames, int frameSpeed)
+{
+    bool animationPlaying = true;
+
+    if(!animatedSprite.playAnimationOnce(action, frames, frameSpeed))
+    {
+        //DrawRectangleRec(hitbox, RED);
+        DrawTextureRec(animatedSprite.getSpriteSheet(), (Rectangle) {animatedSprite.getSpriteX(), animatedSprite.getSpriteY(), 
+        direction*animatedSprite.getCellWidth(), animatedSprite.getCellHeight()}, 
+        {position.x-animatedSprite.getCellWidth()/2, position.y-animatedSprite.getCellHeight()}, WHITE);
+    }
+    else
+    {
+        animationPlaying = false;
+    }
+    return animationPlaying;
+}
+
 float hazard::getPositionX()
 {
     return position.x;
@@ -44,12 +62,24 @@ float hazard::getPositionY()
     return position.y;
 }
 
-void hazard::setPositionX(int newX)
+void hazard::setPositionX(float newX)
 {
     position.x = newX;
+    hitbox.x = newX - animatedSprite.getCellWidth()/2.0f;
 }
 
-void hazard::setPositionY(int newY)
+void hazard::setPositionY(float newY)
 {
     position.y = newY;
+    hitbox.y = newY - animatedSprite.getCellHeight();
+}
+
+float hazard::getDirection()
+{
+    return direction;
+}
+
+void hazard::setDirection(float newDirection)
+{
+    direction = newDirection;
 }

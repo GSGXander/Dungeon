@@ -6,6 +6,8 @@ Player::Player(int dCounter, float sUpgrade, int hUpgrade, Vector2 position, con
     deathCounter = dCounter;
     spdUpgrade = sUpgrade;
     hlthUpgrade = hUpgrade;
+    attackDirection = direction;
+    Vector2 attackLoc = {-100,-100};
     invc = false;
     canMove = true;
     canAttack = true;
@@ -35,11 +37,17 @@ void Player::movementKeyCheck(float delta)
         horizontalSpeed = 0;
     }
 
-    if(IsKeyPressed(KEY_SPACE) && canJump)
+    if(IsKeyPressed(KEY_W) && canJump)
     {
         verticalSpeed = 750.0f * delta;
     }
 
+    if(IsKeyPressed(KEY_SPACE) && canAttack)
+    {
+        canAttack = false;
+        attackDirection = direction;
+        attackLoc = position;
+    }
 }
 
 void Player::playerCollisionCheck(Rectangle *Rec, int roomSize)
@@ -77,6 +85,16 @@ void Player::playerCollisionCheck(Rectangle *Rec, int roomSize)
     {
         canMove = true;
     }
+}
+
+float Player::getAttackDirection()
+{
+    return attackDirection;
+}
+
+Vector2 Player::getAttackLocation()
+{
+    return attackLoc;
 }
 
 int Player::getDeaths()

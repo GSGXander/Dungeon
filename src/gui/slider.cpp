@@ -21,6 +21,9 @@ int slider::getValue()
 void slider::setValue(int val)
 {
     value = val;
+    float leftBound = trackPos.x - trackTexture.width/2;
+    float rightBound = trackPos.x + trackTexture.width/2;
+    knobPos = ((((float)val*(rightBound - leftBound))/100.0f)+leftBound) - 20.0f;
 }
 
 bool slider::isPressed(Vector2 cursorLocation, bool isMousePressed)

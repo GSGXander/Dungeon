@@ -3,19 +3,25 @@
 Dragon::Dragon(Vector2 pos, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY)
     : Entity(100, 10, pos, sheetLocation, spriteCellCountX, spriteCellCountY)
 {
-    phase = 1;
+    phase = 0;
 
     frameTracker = 0;
     attackTimer = 2;
-    movementTimer = 4;
+    movementTimer = 6;
     timerModifier = 1;
     currentLoc = 0;
     canAttack = false;
+    canMove = false;
 }
 
-void Dragon::nextPhase()
+void Dragon::setPhase(int xPhase)
 {
-    phase++;
+    phase = xPhase;
+}
+
+int Dragon::getPhase()
+{
+    return phase;
 }
 
 void Dragon::timerAdvance()
@@ -26,17 +32,51 @@ void Dragon::timerAdvance()
         frameTracker = 0;
         movementTimer--;
         attackTimer--;
-        if(attackTimer == 0)
+        if(attackTimer <= 0)
         {
             canAttack = true;
-            attackTimer = 5;
+            attackTimer = 2;
         }
-        else if (movementTimer)
+        else if (movementTimer <= 0)
         {
-            currentLoc++;
-            position.x = movementLocations[currentLoc].x;
-            position.y = movementLocations[currentLoc].y;
+            canMove = true;
+            movementTimer = 5;
         }
         
     }
+}
+
+int Dragon::getAttackTimer()
+{
+    return attackTimer;
+}
+
+int Dragon::getMovementTimer()
+{
+    return movementTimer;
+}
+
+int Dragon::getFrameTracker()
+{
+    return frameTracker;
+}
+
+bool Dragon::getCanAttack()
+{
+    return canAttack;
+}
+
+bool Dragon::getCanMove()
+{
+    return canMove; 
+}
+
+void Dragon::setCanAttack(bool foo)
+{
+    canAttack = foo;
+}
+
+void Dragon::setCanMove(bool foo)
+{
+    canMove = foo;
 }

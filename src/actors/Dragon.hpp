@@ -12,6 +12,7 @@ class Dragon : public Entity
         int frameTracker;
 
         bool canAttack;
+        bool canMove;
         
         int currentLoc;
         Vector2 movementLocations[];
@@ -19,7 +20,20 @@ class Dragon : public Entity
     public:
         Dragon(Vector2 pos, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY);
 
-        void nextPhase();
+        void setPhase(int xPhase);
+
+        int getPhase();
 
         void timerAdvance();
+
+        int getAttackTimer();
+
+        int getMovementTimer();
+        
+        int getFrameTracker();
+
+        bool getCanMove();
+        bool getCanAttack();
+        void setCanMove(bool foo);
+        void setCanAttack(bool foo);
 };
