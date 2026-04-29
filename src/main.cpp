@@ -104,6 +104,12 @@ int roomId = 0;
 
 hazard playerAttack({-100,-100}, "resources/slash-Sheet.png", true, true, 5, 1);
 hazard testHazard({928.0f, 670.0f}, "resources/hazards/testDanger.png", false, true, 1, 1);
+hazard *hazardList[10];
+for(int i = 0; i < 10; i++)
+{
+    hazardList[i] = new hazard({-200.0f, -200.0f}, "resources/hazards/fireball-Sheet.png", false, false, 2, 1);
+}
+int currentHazard = 0;
 
 ///////////////
 
@@ -399,9 +405,28 @@ while(!endGame)
                 dragon.setDirection(-1.0f);
             }
             
-            //if dragon can attack first , delete soon
+            if(dragon.getCanAttack())
+            {
+                hazardList[currentHazard]->setPositionX(dragon.getPositionX()-40.0f*dragon.getDirection());
+                hazardList[currentHazard]->setPositionY(dragon.getPositionY()-40.0f);
+                hazardList[currentHazard]->setDirection(dragon.getDirection());
+                hazardList[currentHazard]->setActiveTimer(0);
+                
+                float xDif = player.getPositionX() - hazardList[currentHazard]->getPositionX();
+                float yDif = player.getPositionY() - hazardList[currentHazard]->getPositionY();
 
-            if(dragon.getCanMove()) //and cant attack
+                hazardList[currentHazard]->setHorizontalSpeed(xDif/(float)sqrt(xDif*xDif + yDif*yDif)*-800.0f);
+                hazardList[currentHazard]->setVerticalSpeed(yDif/(float)sqrt(xDif*xDif + yDif*yDif)*-800.0f);
+
+                currentHazard++;
+                if(currentHazard > 9)
+                {
+                    currentHazard = 0;
+                }
+                dragon.setCanAttack(false);
+            }
+
+            if(dragon.getCanMove() && !dragon.getCanAttack())
             {
                 if(dragon.getPositionX() >= 640.0f)
                 {
@@ -418,6 +443,46 @@ while(!endGame)
         }
 
         ///////////////////////////////////////////////////////////////////////////
+        ////////////////////////////Hazard Frame Update////////////////////////////
+        for(int i = 0; i < 10; i++)
+        {
+           if(hazardList[i]->getPositionX() >= 0.0f)
+           {
+                hazardList[i]->draw();
+                hazardList[i]->setPositionX(hazardList[i]->getPositionX()-hazardList[i]->getHorizontalSpeed()*deltaTime);
+                hazardList[i]->setPositionY(hazardList[i]->getPositionY()-hazardList[i]->getVerticalSpeed()*deltaTime);
+
+                if(hazardList[i]->checkCollision(player.getHitbox()) && !player.isInvc())
+                {
+                    player.sethealth(player.gethealth()-1);
+                    player.setInvc(true);
+                    playerInvcTimer = 2.0f;
+                    player.setCanMove(false);
+            
+                    player.setVerticalSpeed(500.0f * deltaTime);
+                    if(player.getPositionX() >= testHazard.getPositionX())
+                    {
+                        player.setHorizontalSpeed(150.0f * deltaTime);
+                    }
+                    else
+                    {
+                    player.setHorizontalSpeed(-150.0f * deltaTime);
+                    }
+                }
+                hazardList[i]->hazardRoomCollisionCheck(currentRoom, currentRoomSize);
+                if(!hazardList[i]->getPersistence())
+                {
+                    hazardList[i]->setActiveTimer(hazardList[i]->getActiveTimer() + 1);
+                    if(hazardList[i]->getActiveTimer()/60 >= 8)
+                    {
+                        hazardList[i]->setHorizontalSpeed(0.0f);
+                        hazardList[i]->setVerticalSpeed(0.0f);
+                        hazardList[i]->setPositionX(-200.0f);
+                        hazardList[i]->setPositionY(-200.0f);
+                    }
+                } 
+            }
+        }
         /*testHazard.draw();
         if(testHazard.checkCollision(player.getHitbox()) && !player.isInvc())
         {
@@ -436,8 +501,6 @@ while(!endGame)
                 player.setHorizontalSpeed(-150.0f * deltaTime);
             }
         }*/
-
-
         
         DrawTexture(hudPlate, 10.0f, 10.0f, WHITE);
         DrawTexture(profile, 25.0f, 15.0f, WHITE);
@@ -503,6 +566,8 @@ while(!endGame)
             DrawText(TextFormat("Dragon MTimer: %i", dragon.getMovementTimer()), 0,400,50,WHITE);
             DrawText(TextFormat("Dragon FrameTrack: %i", dragon.getFrameTracker()), 0,450,50,WHITE);
             DrawText(TextFormat("Dragon Can Move: %d", dragon.getCanMove()), 0,500,50,WHITE);
+            DrawText(TextFormat("Dragon Can Attack: %d", dragon.getCanAttack()), 0,550,50,WHITE);
+            DrawText(TextFormat("fireball speed: %f", hazardList[0]->getHorizontalSpeed()), 0,600,50,WHITE);
             DrawRectangleRec(player.getHitbox(), GREEN);
         }
 

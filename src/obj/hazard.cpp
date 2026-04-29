@@ -10,6 +10,7 @@ hazard::hazard(Vector2 pos, const char *sprite, bool plyAttack, bool persistent,
     
     playerAttack = plyAttack;
     isPersistent = persistent;
+    activeTimer = 0;
 }
 
 bool hazard::isPlayerAttack()
@@ -24,6 +25,35 @@ bool hazard::checkCollision(Rectangle entityHitbox)
         return true;
     }
     return false;
+}
+
+void hazard::hazardRoomCollisionCheck(Rectangle *Rec, int roomSize)
+{
+    for(int i = 0; i < roomSize; i++)
+    {
+        Rectangle *Rect = Rec + i;
+        if((CheckCollisionPointRec({position.x, position.y - verticalSpeed}, *Rect))) //floor collision
+        {
+            verticalSpeed = -verticalSpeed;
+            position.y = Rect->y;
+        }
+        else if(CheckCollisionPointRec({position.x, position.y - hitbox.height}, *Rect) && verticalSpeed > 0.0f) //ceiling collision
+        {
+            verticalSpeed = -verticalSpeed;
+        }
+
+        if(CheckCollisionPointRec({position.x - hitbox.width/2, position.y - hitbox.height/2}, *Rect)) //Left wall collision
+        {
+            horizontalSpeed = -horizontalSpeed;
+            position.x = Rect->x + Rect->width + hitbox.width/2;
+        }
+    
+        else if(CheckCollisionPointRec({position.x + hitbox.width/2, position.y - hitbox.height/2}, *Rect)) //Right wall collision
+        {
+            horizontalSpeed = -horizontalSpeed;
+            position.x = Rect->x - hitbox.width/2;
+        }
+    }
 }
 
 void hazard::draw()
@@ -82,4 +112,39 @@ float hazard::getDirection()
 void hazard::setDirection(float newDirection)
 {
     direction = newDirection;
+}
+
+int hazard::getActiveTimer()
+{
+    return activeTimer;
+}
+
+void hazard::setActiveTimer(int new_timer)
+{
+    activeTimer = new_timer;
+}
+
+bool hazard::getPersistence()
+{
+    return isPersistent;
+}
+
+float hazard::getVerticalSpeed()
+{
+    return verticalSpeed;
+}
+
+void hazard::setVerticalSpeed(float new_speed)
+{
+    verticalSpeed = new_speed;
+}
+
+float hazard::getHorizontalSpeed()
+{
+    return horizontalSpeed;
+}
+
+void hazard::setHorizontalSpeed(float new_speed)
+{
+    horizontalSpeed = new_speed;
 }
