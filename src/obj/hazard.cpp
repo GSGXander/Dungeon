@@ -32,12 +32,11 @@ void hazard::hazardRoomCollisionCheck(Rectangle *Rec, int roomSize)
     for(int i = 0; i < roomSize; i++)
     {
         Rectangle *Rect = Rec + i;
-        if((CheckCollisionPointRec({position.x, position.y - verticalSpeed}, *Rect))) //floor collision
+        if((CheckCollisionPointRec({position.x, position.y}, *Rect))) //floor collision
         {
             verticalSpeed = -verticalSpeed;
-            position.y = Rect->y;
         }
-        else if(CheckCollisionPointRec({position.x, position.y - hitbox.height}, *Rect) && verticalSpeed > 0.0f) //ceiling collision
+        else if(CheckCollisionPointRec({position.x, position.y - hitbox.height}, *Rect)) //ceiling collision
         {
             verticalSpeed = -verticalSpeed;
         }
@@ -45,13 +44,11 @@ void hazard::hazardRoomCollisionCheck(Rectangle *Rec, int roomSize)
         if(CheckCollisionPointRec({position.x - hitbox.width/2, position.y - hitbox.height/2}, *Rect)) //Left wall collision
         {
             horizontalSpeed = -horizontalSpeed;
-            position.x = Rect->x + Rect->width + hitbox.width/2;
         }
     
         else if(CheckCollisionPointRec({position.x + hitbox.width/2, position.y - hitbox.height/2}, *Rect)) //Right wall collision
         {
             horizontalSpeed = -horizontalSpeed;
-            position.x = Rect->x - hitbox.width/2;
         }
     }
 }
