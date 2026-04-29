@@ -378,6 +378,13 @@ while(!endGame)
                 achievementList[0].setUnlocked(true);
                 achievementDataSave(0, true);
             }
+            for(int i = 0; i < 10; i++)
+            {
+                hazardList[i]->setHorizontalSpeed(0.0f);
+                hazardList[i]->setVerticalSpeed(0.0f);
+                hazardList[i]->setPositionX(-200.0f);
+                hazardList[i]->setPositionY(-200.0f);
+            }
         }
         ///////////////////////////////////////////////////////////////////////////
         /////////////////Dragon Frame Updates//////////////////////////////////////
