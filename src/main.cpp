@@ -64,7 +64,10 @@ std::vector<button> gameOverUpgrade = {
 {{screenWidth/2 - 250.0f, screenHeight/2 + 200.0f}, "resources/gui/plusButton.png"},
 {{screenWidth/2 + 250.0f, screenHeight/2 + 200.0f}, "resources/gui/plusButton.png"}};
 
-menu menuManager[5] = {{mainButtons}, {{optionsButtons},{optionsSliders}}, {optionsButtons}, {pauseButtons}, {gameOverUpgrade}};
+std::vector<button> endingSlide = {
+{{screenWidth/2, screenHeight/2 + 300.0f}, "Continue", "resources/gui/button_Resize.png"}};
+
+menu menuManager[6] = {{mainButtons}, {{optionsButtons},{optionsSliders}}, {optionsButtons}, {pauseButtons}, {gameOverUpgrade}, {endingSlide}};
 
 ////Textures///
 Texture2D logo = LoadTexture("resources/Default.png");
@@ -104,7 +107,7 @@ int roomId = 0;
 ////Hazards////
 
 hazard playerAttack({-100,-100}, "resources/slash-Sheet.png", true, true, 5, 1);
-hazard testHazard({928.0f, 670.0f}, "resources/hazards/testDanger.png", false, true, 1, 1);
+//hazard testHazard({928.0f, 670.0f}, "resources/hazards/testDanger.png", false, true, 1, 1);
 hazard *hazardList[10];
 for(int i = 0; i < 10; i++)
 {
@@ -311,7 +314,14 @@ while(!endGame)
                     break;
             }
             break;
-            
+        case 5:     //Ending Screen
+            menuManager[5].draw();
+            DrawText("Wow, you won! Amazing.", screenWidth/2 - MeasureText("Wow, you won! Amazing.", 100)/2, screenHeight/2 - 300.0f, 100, BLACK);
+            if(menuManager[5].isPressed(GetMousePosition(), IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) == 0)
+            {
+                currentMenu = 0;
+            }
+            break;
         default:
             currentMenu = 0;
             break;
@@ -455,6 +465,19 @@ while(!endGame)
                 dragonInvcTimer = 1.0f;
             }
 
+            if(dragon.gethealth() <= 0)
+            {
+                currentMenu = 5;
+                gameMode = 0;
+                StopMusicStream(music);
+                for(int i = 0; i < 10; i++)
+                    {
+                        hazardList[i]->setHorizontalSpeed(0.0f);
+                        hazardList[i]->setVerticalSpeed(0.0f);
+                        hazardList[i]->setPositionX(-200.0f);
+                        hazardList[i]->setPositionY(-200.0f);
+                    }
+            }
         }
         /////////PLAYER ATTACK///////////// (Down here cause of draw order)
         if(!player.ableToAttack())
@@ -485,7 +508,7 @@ while(!endGame)
                     player.setCanMove(false);
             
                     player.setVerticalSpeed(500.0f * deltaTime);
-                    if(player.getPositionX() >= testHazard.getPositionX())
+                    if(player.getPositionX() >= hazardList[i]->getPositionX())
                     {
                         player.setHorizontalSpeed(150.0f * deltaTime);
                     }
