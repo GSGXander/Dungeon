@@ -73,6 +73,8 @@ menu menuManager[6] = {{mainButtons}, {{optionsButtons},{optionsSliders}}, {opti
 Texture2D logo = LoadTexture("resources/Default.png");
 Texture2D hudPlate = LoadTexture("resources/gui/hudPlate.png");
 Texture2D profile = LoadTexture("resources/gui/knightProfile.png");
+Texture2D wall = LoadTexture("resources/environment/greywall.png");
+Texture2D stone = LoadTexture("resources/environment/stone.png");
 
 ////Achievements////
 achievement achievementList[3] = {
@@ -106,7 +108,7 @@ int roomId = 0;
 
 ////Hazards////
 
-hazard playerAttack({-100,-100}, "resources/slash-Sheet.png", true, true, 5, 1);
+hazard playerAttack({-100,-100}, "resources/hazards/slash-Sheet.png", true, true, 5, 1);
 //hazard testHazard({928.0f, 670.0f}, "resources/hazards/testDanger.png", false, true, 1, 1);
 hazard *hazardList[10];
 for(int i = 0; i < 10; i++)
@@ -118,7 +120,7 @@ int currentHazard = 0;
 ///////////////
 
 
-Player player(0, 0, 0, {150, 670.0f}, "resources/playerMovementTest-Sheet.png", 2, 2);
+Player player(0, 0, 0, {150, 670.0f}, "resources/actors/knight-Sheet.png", 2, 2, 1.5f);
 Dragon dragon({980.0f, 670.0f}, "resources/dragonAA223.png", 1, 1);
 Music music = LoadMusicStream("resources/music/hazy_maze_cave.mp3");
 music.looping = true;
@@ -162,7 +164,7 @@ while(!endGame)
     }
     else
     {
-        ClearBackground(BLACK);
+        DrawTexturePro(wall, {0.0f, 0.0f, screenWidth, screenHeight}, {0.0f, 0.0f, screenWidth, screenHeight}, {0.0f, 0.0f}, 0.0f, DARKGRAY);
     }
     
     if (gameMode == 0) // Menu Mode
@@ -355,13 +357,13 @@ while(!endGame)
         for(int i = 0; i < currentRoomSize; i++)
         {
             Rectangle *Rect = currentRoom + i;
-            DrawRectangleRec(*Rect, BLUE);
+            DrawTexturePro(stone, {0.0f, 0.0f, Rect->width, Rect->height}, *Rect, {0.0f, 0.0f}, 0.0f, BROWN);
         }
         player.playerCollisionCheck(currentRoom, currentRoomSize);
 
         if(player.getHorizontalSpeed() != 0.0f)
         {
-            player.draw(1);
+            player.draw(1,2,10);
         }
         else
         {

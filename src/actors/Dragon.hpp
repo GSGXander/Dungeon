@@ -21,6 +21,7 @@ class Dragon : public Entity
 
     public:
         Dragon(Vector2 pos, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY);
+        Dragon(Vector2 pos, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY, float spriteResize);
 
         void setMaxHealth(int new_mHp);
         int getMaxHealth();

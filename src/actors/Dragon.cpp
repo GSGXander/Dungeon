@@ -1,7 +1,22 @@
 #include "Dragon.hpp"
 
 Dragon::Dragon(Vector2 pos, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY)
-    : Entity(50, 10, pos, sheetLocation, spriteCellCountX, spriteCellCountY)
+    : Entity(50, 10, pos, sheetLocation, spriteCellCountX, spriteCellCountY, 1.0f)
+{
+    phase = 0;
+
+    frameTracker = 0;
+    attackTimer = 2;
+    movementTimer = 6;
+    timerModifier = 1;
+    currentLoc = 0;
+    canAttack = false;
+    canMove = false;
+    invc = false;
+}
+
+Dragon::Dragon(Vector2 pos, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY, float spriteResize)
+    : Entity(50, 10, pos, sheetLocation, spriteCellCountX, spriteCellCountY, spriteResize)
 {
     phase = 0;
 
