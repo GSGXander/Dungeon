@@ -50,6 +50,38 @@ void Entity::draw(int action, int frameCount, int speed)
     0.0f, WHITE);
 }
 
+bool Entity::drawEX(int action, int frameCount, int speed, Color tint, bool playOnce)
+{
+    bool animationPlaying = true;
+
+    if(!playOnce)
+    {
+        animatedSprite.playAnimation(action, frameCount, speed);
+        DrawTexturePro(animatedSprite.getSpriteSheet(),
+        {animatedSprite.getSpriteX(), animatedSprite.getSpriteY(),direction*animatedSprite.getCellWidth(), animatedSprite.getCellHeight()},
+        {position.x, position.y, animatedSprite.getCellWidth()*spriteScale, animatedSprite.getCellHeight()*spriteScale},
+        {(animatedSprite.getCellWidth()*spriteScale)/2, animatedSprite.getCellHeight()*spriteScale},
+        0.0f, WHITE);
+    }
+    else
+    {
+        if(!animatedSprite.playAnimationOnce(action, frameCount, speed))
+        {
+            animatedSprite.playAnimation(action, frameCount, speed);
+            DrawTexturePro(animatedSprite.getSpriteSheet(),
+            {animatedSprite.getSpriteX(), animatedSprite.getSpriteY(),direction*animatedSprite.getCellWidth(), animatedSprite.getCellHeight()},
+            {position.x, position.y, animatedSprite.getCellWidth()*spriteScale, animatedSprite.getCellHeight()*spriteScale},
+            {(animatedSprite.getCellWidth()*spriteScale)/2, animatedSprite.getCellHeight()*spriteScale},
+            0.0f, WHITE);
+        }
+        else
+        {
+            animationPlaying = false;
+        }
+    }
+    return animationPlaying;
+}
+
 void Entity::updateHithox()
 {
     hitbox.x = position.x-(animatedSprite.getCellWidth()*spriteScale)/2;

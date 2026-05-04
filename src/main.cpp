@@ -109,7 +109,6 @@ int roomId = 0;
 ////Hazards////
 
 hazard playerAttack({-100,-100}, "resources/hazards/slash-Sheet.png", true, true, 5, 1);
-//hazard testHazard({928.0f, 670.0f}, "resources/hazards/testDanger.png", false, true, 1, 1);
 hazard *hazardList[10];
 for(int i = 0; i < 10; i++)
 {
@@ -121,7 +120,7 @@ int currentHazard = 0;
 
 
 Player player(0, 0, 0, {150, 670.0f}, "resources/actors/knight-Sheet.png", 2, 2, 1.5f);
-Dragon dragon({980.0f, 670.0f}, "resources/dragonAA223.png", 1, 1);
+Dragon dragon({980.0f, 670.0f}, "resources/actors/dragon-Sheet.png", 3, 2, 1.5f);
 Music music = LoadMusicStream("resources/music/hazy_maze_cave.mp3");
 music.looping = true;
 SetMusicVolume(music, (float)(optionsSliders[1].getValue())/100.0f);
@@ -361,6 +360,13 @@ while(!endGame)
         }
         player.playerCollisionCheck(currentRoom, currentRoomSize);
 
+        if(!player.ableToAttack())
+        {
+            playerAttack.setDirection(player.getAttackDirection());
+            playerAttack.setPositionX(player.getAttackLocation().x - 80.0f*playerAttack.getDirection());
+            playerAttack.setPositionY(player.getAttackLocation().y);
+        }
+
         if(player.getHorizontalSpeed() != 0.0f)
         {
             player.draw(1,2,10);
@@ -416,8 +422,8 @@ while(!endGame)
             
             if(dragon.getCanAttack())
             {
-                hazardList[currentHazard]->setPositionX(dragon.getPositionX()-40.0f*dragon.getDirection());
-                hazardList[currentHazard]->setPositionY(dragon.getPositionY()-40.0f);
+                hazardList[currentHazard]->setPositionX(dragon.getPositionX()-(dragon.getHitbox().width/2)*dragon.getDirection());
+                hazardList[currentHazard]->setPositionY(dragon.getPositionY()-dragon.getHitbox().width/2);
                 hazardList[currentHazard]->setDirection(dragon.getDirection());
                 hazardList[currentHazard]->setActiveTimer(0);
                 
@@ -449,7 +455,7 @@ while(!endGame)
                 dragon.updateHithox();
             }
 
-            dragon.draw(0);
+            dragon.draw(0, 1);
 
             if(dragonInvcTimer > 0.0f)
             {
@@ -481,12 +487,9 @@ while(!endGame)
                     }
             }
         }
-        /////////PLAYER ATTACK///////////// (Down here cause of draw order)
+        /////////PLAYER ATTACK DRAW///////////// (Down here cause of draw order)
         if(!player.ableToAttack())
         {
-            playerAttack.setDirection(player.getAttackDirection());
-            playerAttack.setPositionX(player.getAttackLocation().x - 80.0f*playerAttack.getDirection());
-            playerAttack.setPositionY(player.getAttackLocation().y);
             if(!playerAttack.timedDraw(0,4,15))
             {
                 player.setCanAttack(true);
@@ -535,25 +538,6 @@ while(!endGame)
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
-        /*testHazard.draw();
-        if(testHazard.checkCollision(player.getHitbox()) && !player.isInvc())
-        {
-            player.sethealth(player.gethealth()-1);
-            player.setInvc(true);
-            playerInvcTimer = 2.0f;
-            player.setCanMove(false);
-            
-            player.setVerticalSpeed(500.0f * deltaTime);
-            if(player.getPositionX() >= testHazard.getPositionX())
-            {
-                player.setHorizontalSpeed(150.0f * deltaTime);
-            }
-            else
-            {
-                player.setHorizontalSpeed(-150.0f * deltaTime);
-            }
-        }*/
-        
         ///////////Hud////////////////
         DrawTexture(hudPlate, 10.0f, 10.0f, WHITE);
         DrawTexture(profile, 25.0f, 15.0f, WHITE);

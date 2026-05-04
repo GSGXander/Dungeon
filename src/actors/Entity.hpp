@@ -22,6 +22,8 @@ class Entity
         void draw(int action);
         void draw(int action, int frameCount);
         void draw(int action, int frameCount, int speed);
+        bool drawOnce(int action, int frameCount, int speed);
+        bool drawEX(int action, int frameCount, int speed, Color tint, bool playOnce);
 
         int gethealth();
         void sethealth(int new_health);
