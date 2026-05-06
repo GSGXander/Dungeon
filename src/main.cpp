@@ -70,7 +70,7 @@ std::vector<button> endingSlide = {
 menu menuManager[6] = {{mainButtons}, {{optionsButtons},{optionsSliders}}, {optionsButtons}, {pauseButtons}, {gameOverUpgrade}, {endingSlide}};
 
 ////Textures///
-Texture2D logo = LoadTexture("resources/Default.png");
+Texture2D logo = LoadTexture("resources/gui/DungeonLogo.png");
 Texture2D hudPlate = LoadTexture("resources/gui/hudPlate.png");
 Texture2D profile = LoadTexture("resources/gui/knightProfile.png");
 Texture2D wall = LoadTexture("resources/environment/greywall.png");
@@ -159,7 +159,7 @@ while(!endGame)
 
     if(gameMode != 1)
     {
-        ClearBackground(GRAY);
+        DrawTexturePro(wall, {0.0f, 0.0f, screenWidth, screenHeight}, {0.0f, 0.0f, screenWidth, screenHeight}, {0.0f, 0.0f}, 0.0f, DARKPURPLE);
     }
     else
     {
