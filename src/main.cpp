@@ -650,7 +650,7 @@ void gameStartState(Player *user, Dragon *drag)
     drag->setCanAttack(false);
     drag->setCanMove(false);
     drag->setPhase(0);
-    drag->sethealth(5);
+    drag->sethealth(15);
     drag->setMaxHealth(drag->gethealth());
 }
 
