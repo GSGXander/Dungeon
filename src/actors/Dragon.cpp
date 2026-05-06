@@ -1,7 +1,7 @@
 #include "Dragon.hpp"
 
-Dragon::Dragon(Vector2 pos, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY)
-    : Entity(100, 10, pos, sheetLocation, spriteCellCountX, spriteCellCountY)
+Dragon::Dragon(Vector2 pos, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY, float spriteResize)
+    : Entity(50, 10, pos, sheetLocation, spriteCellCountX, spriteCellCountY, spriteResize)
 {
     phase = 0;
 
@@ -12,6 +12,7 @@ Dragon::Dragon(Vector2 pos, const char *sheetLocation, int spriteCellCountX, int
     currentLoc = 0;
     canAttack = false;
     canMove = false;
+    invc = false;
 }
 
 void Dragon::setPhase(int xPhase)
@@ -44,6 +45,16 @@ void Dragon::timerAdvance()
         }
         
     }
+}
+
+void Dragon::setMaxHealth(int new_mHp)
+{
+    maxHealth = new_mHp;
+}
+
+int Dragon::getMaxHealth()
+{
+    return maxHealth;
 }
 
 int Dragon::getAttackTimer()
@@ -79,4 +90,14 @@ void Dragon::setCanAttack(bool foo)
 void Dragon::setCanMove(bool foo)
 {
     canMove = foo;
+}
+
+bool Dragon::isInvc()
+{
+    return invc;
+}
+
+void Dragon::setInvc(bool boo)
+{
+    invc = boo;
 }

@@ -17,6 +17,7 @@ class Player : public Entity
 
     public:
         Player(int dCounter, float sUpgrade, int hUpgrade, Vector2 position, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY);
+        Player(int dCounter, float sUpgrade, int hUpgrade, Vector2 position, const char *sheetLocation, int spriteCellCountX, int spriteCellCountY, float spriteResize);
         
         void movementKeyCheck(float delta);
         void playerCollisionCheck(Rectangle *Rec, int roomSize);
